@@ -22,7 +22,7 @@ snd_pcm_uframes_t frames;
 char *buffer;
 
 /* Open PCM device for recording (capture). */
-rc = snd_pcm_open(&handle, "plughw:1,0",
+rc = snd_pcm_open(&handle, "plughw:1,1",
                     SND_PCM_STREAM_CAPTURE, 0);
 if (rc < 0) {
     fprintf(stderr,

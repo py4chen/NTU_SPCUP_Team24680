@@ -64,7 +64,7 @@ if (rc < 0) {
             snd_strerror(rc));
     exit(1);
 }
-//printf("rc:%d\n",rc);
+printf("rc:%d\n",rc);
 
 /* Display information about the PCM interface */
 
