@@ -24,6 +24,7 @@ snd_pcm_hw_params_t *params;
 unsigned int samplerate = 16000;
 unsigned int win_size = 1024;
 unsigned int hop_size = 512;
+unsigned int n_frames = 0;
 int dir;
 snd_pcm_uframes_t frames;
 unsigned char *buffer;
@@ -163,6 +164,7 @@ while (loops > 0) {
 			in->data[j] = signed_val * scaler;
 		}
     aubio_tempo_do(o,in,out);
+		n_frames+= hop_size;
     if (out->data[0] != 0) {
       fprintf(stderr, "beat at %.3fms, %.3fs, frame %d, %.2fbpm with confidence %.2f\n",
           aubio_tempo_get_last_ms(o), aubio_tempo_get_last_s(o),
@@ -171,6 +173,10 @@ while (loops > 0) {
 	}
 	
 }
+fprintf(stderr, "read %.2fs, %d frames at %dHz (%d blocks)\n",
+		n_frames * 1. / samplerate,
+		n_frames, samplerate,
+		n_frames / hop_size);
 
 
 //We don't care about the last part which less than 2 seconds, because there is no more beat point we need to predict.
