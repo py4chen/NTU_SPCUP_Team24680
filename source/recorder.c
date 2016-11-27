@@ -80,8 +80,9 @@ buffer = (unsigned char *) malloc(size);
 
 
 /* We want to loop for 5 seconds */
-snd_pcm_hw_params_get_period_time(params, &samplerate, &dir);
-loops = duration / samplerate;
+unsigned int val;
+snd_pcm_hw_params_get_period_time(params, &val, &dir);
+loops = duration / val;
 allBuffer = (unsigned char *) malloc(size * loops);
 if (allBuffer==NULL){
 	fprintf(stderr, "Fail\n");
