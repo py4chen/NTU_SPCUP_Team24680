@@ -12,6 +12,7 @@ and writes to standard output for 5 seconds of data.
 #include <stdlib.h>
 #include <fcntl.h>
 #include <math.h>
+#include <unistd.h>
 
 
 int main() {
@@ -23,8 +24,8 @@ snd_pcm_hw_params_t *params;
 unsigned int val;
 int dir;
 snd_pcm_uframes_t frames;
-char *buffer;
-char *allBuffer;
+unsigned char *buffer;
+unsigned char *allBuffer;
 int duration = 10000000;
 
 /* Open PCM device for recording (capture). */
@@ -58,8 +59,9 @@ val = 44100;
 snd_pcm_hw_params_set_rate_near(handle, params, &val, &dir);
 
 /* Set period size to 32 frames. */
-frames = 32;
+frames = 64;
 snd_pcm_hw_params_set_period_size_near(handle, params, &frames, &dir);
+
 
 /* Write the parameters to the driver */
 rc = snd_pcm_hw_params(handle, params);
@@ -92,6 +94,7 @@ int i = 0;
 int sec = duration / 1000000;
 int LPerS = loops / sec;
 int LPer2S = LPerS * 2;
+fprintf(stderr, "%ld\n", loops);
 while (loops > 0) {
 	loops--;
 	rc = snd_pcm_readi(handle, buffer, frames);
@@ -118,8 +121,19 @@ while (loops > 0) {
 		}else{
 			write(fd, allBuffer + size * (i - LPerS*5), LPerS*5*size);
 		}
+		
 		close(fd);
-		fileNo = fileNo + 1;		
+		fileNo = fileNo + 1;
+	}
+	if (i % 64 == 0){
+		//unsigned char* head = allBuffer + size * (i - 64);
+		//int length = size * 64;
+		//int s;
+		//smpl_t data[512];
+		//for(s = 0;s < 512;s++){
+		//	
+		//}
+		//usleep(80000);	
 	}
 	
 }
