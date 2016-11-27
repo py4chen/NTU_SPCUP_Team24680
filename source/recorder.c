@@ -13,7 +13,7 @@ and writes to standard output for 5 seconds of data.
 #include <fcntl.h>
 #include <math.h>
 #include <unistd.h>
-
+#include <aubio.h>
 
 int main() {
 long loops;
@@ -21,7 +21,9 @@ int rc;
 int size;
 snd_pcm_t *handle;
 snd_pcm_hw_params_t *params;
-unsigned int val;
+unsigned int samplerate = 44100;
+unsigned int win_size = 1024;
+unsigned int hop_size = 512;
 int dir;
 snd_pcm_uframes_t frames;
 unsigned char *buffer;
@@ -55,8 +57,7 @@ snd_pcm_hw_params_set_format(handle, params, SND_PCM_FORMAT_S16_LE);
 snd_pcm_hw_params_set_channels(handle, params, 1);
 
 /* 44100 bits/second sampling rate (CD quality) */
-val = 44100;
-snd_pcm_hw_params_set_rate_near(handle, params, &val, &dir);
+snd_pcm_hw_params_set_rate_near(handle, params, &samplerate, &dir);
 
 /* Set period size to 32 frames. */
 frames = 64;
@@ -75,18 +76,27 @@ if (rc < 0) {
 /* Use a buffer large enough to hold one period */
 snd_pcm_hw_params_get_period_size(params, &frames, &dir);
 size = frames * 2; /* 2 bytes/sample, 2 channels */
-buffer = (char *) malloc(size);
+buffer = (unsigned char *) malloc(size);
 
 
 /* We want to loop for 5 seconds */
-snd_pcm_hw_params_get_period_time(params, &val, &dir);
-loops = duration / val;
-allBuffer = (char *) malloc(size * loops);
+snd_pcm_hw_params_get_period_time(params, &samplerate, &dir);
+loops = duration / samplerate;
+allBuffer = (unsigned char *) malloc(size * loops);
 if (allBuffer==NULL){
 	fprintf(stderr, "Fail\n");
 	exit(1);
 }
 
+/* aubio init */
+unsigned int bitspersample = 16;
+
+// create some vectors
+fvec_t * in = new_fvec (hop_size); // input audio buffer
+fvec_t * out = new_fvec (1); // output position
+
+// create tempo object
+aubio_tempo_t * o = new_aubio_tempo("default", win_size, hop_size, samplerate);
 
 char filename[10];
 int fileNo = 1;
@@ -94,7 +104,6 @@ int i = 0;
 int sec = duration / 1000000;
 int LPerS = loops / sec;
 int LPer2S = LPerS * 2;
-fprintf(stderr, "%ld\n", loops);
 while (loops > 0) {
 	loops--;
 	rc = snd_pcm_readi(handle, buffer, frames);
@@ -109,7 +118,7 @@ while (loops > 0) {
 	} else if (rc != (int)frames) {
 	  fprintf(stderr, "short read, read %d frames\n", rc);
 	}
-	strcpy(allBuffer + size * i, buffer);	
+	memcpy(allBuffer + size * i, buffer, size);	
 	i = i + 1;
 
 	if (i == LPer2S*fileNo){
@@ -126,7 +135,7 @@ while (loops > 0) {
 		fileNo = fileNo + 1;
 	}
 	if (i % 64 == 0){
-		//unsigned char* head = allBuffer + size * (i - 64);
+		unsigned char* char_ptr = allBuffer + size * (i - 64);
 		//int length = size * 64;
 		//int s;
 		//smpl_t data[512];
@@ -134,6 +143,30 @@ while (loops > 0) {
 		//	
 		//}
 		//usleep(80000);	
+		uint_t wrap_at = (1 << ( bitspersample - 1 ) );
+		uint_t wrap_with = (1 << bitspersample);
+		smpl_t scaler = 1. / wrap_at;
+		int signed_val = 0;
+		unsigned int j, b, unsigned_val = 0;
+		for (j = 0; j < hop_size; j++) {
+			unsigned_val = 0;
+			for (b = 0; b < bitspersample; b+=8 ) {
+				unsigned_val += *(char_ptr) << b;
+				char_ptr++;
+			}
+			signed_val = unsigned_val;
+			// FIXME why does 8 bit conversion maps [0;255] to [-128;127]
+			// instead of [0;127] to [0;127] and [128;255] to [-128;-1]
+			if (bitspersample == 8) signed_val -= wrap_at;
+			else if (unsigned_val >= wrap_at) signed_val = unsigned_val - wrap_with;
+			in->data[j] = signed_val * scaler;
+		}
+    aubio_tempo_do(o,in,out);
+    if (out->data[0] != 0) {
+      fprintf(stderr, "beat at %.3fms, %.3fs, frame %d, %.2fbpm with confidence %.2f\n",
+          aubio_tempo_get_last_ms(o), aubio_tempo_get_last_s(o),
+          aubio_tempo_get_last(o), aubio_tempo_get_bpm(o), aubio_tempo_get_confidence(o));
+    }
 	}
 	
 }
@@ -146,6 +179,12 @@ snd_pcm_drain(handle);
 snd_pcm_close(handle);
 free(buffer);
 free(allBuffer);
+
+/* aubio free */
+del_aubio_tempo(o);
+del_fvec(in);
+del_fvec(out);
+aubio_cleanup();
 
 return 0;
 }
