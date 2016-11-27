@@ -1,0 +1,4 @@
+[submodule "madmom/models"]
+	path = madmom/models
+	url = https://github.com/CPJKU/madmom_models.git
+	branch = master
