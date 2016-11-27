@@ -99,6 +99,7 @@ def main():
         # sequentially process them
         out_processor = [beat_processor, writer]
 
+
     # create an IOProcessor
     processor = IOProcessor(in_processor, out_processor)
 

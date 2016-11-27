@@ -179,10 +179,11 @@ def _process(process_tuple):
 
     """
     if process_tuple[0] is None:
-        # do not process the data, if the first item (i.e. Processor) is None
+        #o not process the data, if the first item (i.e. Processor) is None
         return process_tuple[1]
     else:
         # just call whatever we got here (every Processor is callable)
+        d
         return process_tuple[0](*process_tuple[1:])
 
 
