@@ -21,14 +21,14 @@ int rc;
 int size;
 snd_pcm_t *handle;
 snd_pcm_hw_params_t *params;
-unsigned int samplerate = 44100;
+unsigned int samplerate = 16000;
 unsigned int win_size = 1024;
 unsigned int hop_size = 512;
 int dir;
 snd_pcm_uframes_t frames;
 unsigned char *buffer;
 unsigned char *allBuffer;
-int duration = 10000000;
+int duration = 30000000;
 
 /* Open PCM device for recording (capture). */
 rc = snd_pcm_open(&handle, "default", SND_PCM_STREAM_CAPTURE, 0);
@@ -135,8 +135,8 @@ while (loops > 0) {
 		close(fd);
 		fileNo = fileNo + 1;
 	}
-	if (i % 64 == 0){
-		unsigned char* char_ptr = allBuffer + size * (i - 64);
+	if (i % 8 == 0){
+		unsigned char* char_ptr = allBuffer + size * (i - 8);
 		//int length = size * 64;
 		//int s;
 		//smpl_t data[512];
