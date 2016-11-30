@@ -5,12 +5,16 @@
 #include <stddef.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <string.h>
 
 #ifndef LED_C
 #include "led.c"
 #endif
 #ifndef STRUCTURE_LIB
 #include "structure.h"
+#endif
+#ifndef DETECTOR_C
+#include "detector.c"
 #endif
 
 /* Global Variable */
@@ -23,7 +27,7 @@ double nano_interval;
 
 // Nanosleep Sturct
 struct timespec request, remain;
-struct timeval last_beat_time, cur_time;
+unsigned long long last_beat_time, cur_time, next_time;
 
 // Signal set
 sigset_t blockSet, prevMask;
@@ -31,14 +35,25 @@ sigset_t blockSet, prevMask;
 static void sigHandler(int sig){
 	// set Beat time sleep
 	if(sig == SIGUSR1){
-		double spb = (double)60 / (double)addr->bpm;
+		// calculate seconds per bit
+		double spb = (double)60 / addr->bpm;
 		sec_interval = (int) spb;
-		nano_interval = (spb - sec_interval) * 1000;
-		if(gettimeofday(&cur_time, NULL) == -1)
-    		errExit("cur gettimeofday");
-    	remain.tv_sec = cur_time.tv_sec - addr->last_beat_time.tv_sec;
-    	remain.tv_nsec = (cur_time.tv_usec - addr->last_beat_time.tv_usec) * 1000;
+		nano_interval = (spb - sec_interval) * 1000000000;
+
+		// calculate remain time
+		cur_time = getCurrentTimestamp();
+		next_time = addr->start_time + addr->last_ms * 1000;
+		while(next_time < cur_time){
+			next_time += spb*1000000;
+		}
+		remain.tv_sec = (next_time-cur_time)/1000000;
+		remain.tv_nsec = (next_time-cur_time - remain.tv_sec) * 1000;
+
     }
+    cur_time = getCurrentTimestamp();
+        printf("sec:%9.6llu\n", cur_time - last_beat_time);
+
+
 	return;
 }
 
@@ -49,14 +64,11 @@ int main(int argc, char *argv[]){
         errExit("mmap");
 
     /* Initialize Beat Message in mapped region */
- 	addr->last_ms = 0;                  
- 	addr->last_s = 0;
- 	addr->last_frame = 0;
- 	addr->bpm = 0;
+ 	memset (addr, 0, sizeof(Message));
 
     /* Initialize lastBeatTime & msbp(millisecond per beat)*/
-    last_beat_time.tv_sec = 0;
-    last_beat_time.tv_usec = 0;
+    last_beat_time = 0;
+    cur_time = 0;
     sec_interval = 1;
     nano_interval = 0;
 
@@ -74,7 +86,7 @@ int main(int argc, char *argv[]){
         errExit("fork");
 
     case 0:                     /* Child: increment shared integer and exit */
-        
+        detector(getpid(), addr);
         exit(1);
 
     default:                    /* Parent: wait for child to terminate */
@@ -93,8 +105,9 @@ int main(int argc, char *argv[]){
         	}
         	if(sigprocmask(SIG_BLOCK, &blockSet, &prevMask) == -1)
         		errExit("sigprocmask1");
-        	if(gettimeofday(&last_beat_time, NULL) == -1)
+        	if(gettimeofday(&tv, NULL) == -1)
         		errExit("last_beat_time gettimeofday");
+        	last_beat_time = getCurrentTimestamp();
         	ledACT();
         	remain.tv_sec = sec_interval;
         	remain.tv_nsec = nano_interval;
