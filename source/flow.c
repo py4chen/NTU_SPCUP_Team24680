@@ -107,7 +107,7 @@ int main(int argc, char *argv[]){
         	if(gettimeofday(&tv, NULL) == -1)
         		errExit("last_beat_time gettimeofday");
         	last_beat_time = getCurrentTimestamp();
-        	ledACT();
+        	ledACT(addr);
         	remain.tv_sec = sec_interval;
         	remain.tv_nsec = nano_interval;
         	if(sigprocmask(SIG_SETMASK, &prevMask, NULL) == -1)

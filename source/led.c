@@ -18,7 +18,9 @@ void _ledACT(){
 	fclose(f);
 }
 
-void ledACT(){
-	printf("LED0! Current Time:%llu\n\n", getCurrentTimestamp());
+void ledACT(Message *addr){
+
+	printf("LED0! Current Time:%llu  Relative Time:%llu \n\n", 
+		getCurrentTimestamp(), getCurrentTimestamp()-addr->start_time);
 }
 
