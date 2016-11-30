@@ -17,7 +17,7 @@
 #include "structure.h"
 #endif
 
-void detector(int pid, Message *addr) {
+int detector(int pid, Message *addr) {
 long loops;
 int rc;
 int size;
@@ -172,7 +172,7 @@ while (loops > 0) {
     	addr->bpm = aubio_tempo_get_bpm(o);
     	addr->last_ms = aubio_tempo_get_last_ms(o);
     	addr->last_frame = aubio_tempo_get_last(o);
-    	kill(ppid, SIGUSR1);
+    	kill(pid, SIGUSR1);
 
       	fprintf(stderr, "beat at %.3fms, %.3fs, frame %d, %.2fbpm with confidence %.2f\n",
           aubio_tempo_get_last_ms(o), aubio_tempo_get_last_s(o),
