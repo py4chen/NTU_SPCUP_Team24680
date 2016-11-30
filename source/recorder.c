@@ -24,6 +24,7 @@ snd_pcm_hw_params_t *params;
 unsigned int samplerate = 16000;
 unsigned int win_size = 1024;
 unsigned int hop_size = 512;
+unsigned int bitspersample = 16;
 unsigned int n_frames = 0;
 int dir;
 snd_pcm_uframes_t frames;
@@ -76,7 +77,7 @@ if (rc < 0) {
 
 /* Use a buffer large enough to hold one period */
 snd_pcm_hw_params_get_period_size(params, &frames, &dir);
-size = frames * 2; /* 2 bytes/sample, 2 channels */
+size = frames * bitspersample/8; /* 2 bytes/sample, 2 channels */
 buffer = (unsigned char *) malloc(size);
 
 
@@ -91,7 +92,6 @@ if (allBuffer==NULL){
 }
 
 /* aubio init */
-unsigned int bitspersample = 16;
 
 // create some vectors
 fvec_t * in = new_fvec (hop_size); // input audio buffer
