@@ -22,8 +22,8 @@
 Message *addr;   
 
 // Beat Time Variables
-double sec_interval;
-double nano_interval;
+long long sec_interval;
+long long nano_interval;
 
 // Nanosleep Sturct
 struct timespec request, remain;
@@ -39,6 +39,8 @@ static void sigHandler(int sig){
 		double spb = (double)60 / addr->bpm;
 		sec_interval = (int) spb;
 		nano_interval = (spb - sec_interval) * 1000000000;
+		printf("new sec_interval:%lld, nano_interval:%lld\n", sec_interval,
+			nano_interval);
 
 		// calculate remain time
 		cur_time = getCurrentTimestamp();
@@ -48,7 +50,6 @@ static void sigHandler(int sig){
 		}
 		remain.tv_sec = (next_time-cur_time)/1000000;
 		remain.tv_nsec = (next_time-cur_time - remain.tv_sec) * 1000;
-
     }
 	return;
 }
