@@ -50,10 +50,6 @@ static void sigHandler(int sig){
 		remain.tv_nsec = (next_time-cur_time - remain.tv_sec) * 1000;
 
     }
-    cur_time = getCurrentTimestamp();
-        printf("sec:%9.6llu\n", cur_time - last_beat_time);
-
-
 	return;
 }
 
@@ -95,8 +91,8 @@ int main(int argc, char *argv[]){
         for(;;){
         	// printf("here: %d %d\n", (int)sec_interval, (int) nano_interval);
         	while(1){
-        		printf("remain: %2ld.%09ld\n", (long)remain.tv_sec,
-        			remain.tv_nsec);
+        		// printf("remain: %2ld.%09ld\n", (long)remain.tv_sec,
+        		// 	remain.tv_nsec);
         		request = remain;
         		int s = nanosleep(&request, &remain);
         		if (s != -1)
