@@ -3,6 +3,10 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#ifndef STRUCTURE_LIB
+#include "structure.h"
+#endif
+
 void _ledACT(){
 	FILE *f = fopen("/sys/class/leds/led0/shot", "w");
 	if (f == NULL)
@@ -14,7 +18,9 @@ void _ledACT(){
 	fclose(f);
 }
 
-void ledACT(){
-	printf("!!!LED0!!!\n\n");
+void ledACT(Message *addr){
+
+	printf("LED0! Current Time:%llu  Relative Time:%llu \n\n", 
+		getCurrentTimestamp(), getCurrentTimestamp()-addr->start_time);
 }
 

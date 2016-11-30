@@ -8,12 +8,19 @@ void errExit(char *str){
 }
 
 typedef struct message{
-	float last_ms;
-	float last_s;
+	double last_ms;
 	int last_frame;
-	int bpm;
-	struct timeval last_beat_time;
+	double bpm;
+	unsigned long long start_time;
+
 }Message;
+
+struct timeval tv;
+unsigned long long getCurrentTimestamp(){
+	if(gettimeofday(&tv, NULL) == -1)
+       errExit("last_beat_time gettimeofday");
+    return 1000000 * tv.tv_sec + tv.tv_usec;
+}
 
 /*
 struct timespec{
