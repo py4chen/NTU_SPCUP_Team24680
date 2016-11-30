@@ -57,6 +57,8 @@ snd_pcm_hw_params_set_format(handle, params, SND_PCM_FORMAT_S16_LE);
 
 /* Two channels (stereo) */
 snd_pcm_hw_params_set_channels(handle, params, 1);
+unsigned int wwww; //get_channels!
+snd_pcm_hw_params_get_channels(params, &wwww);
 
 /* 44100 bits/second sampling rate (CD quality) */
 snd_pcm_hw_params_set_rate_near(handle, params, &samplerate, &dir);
