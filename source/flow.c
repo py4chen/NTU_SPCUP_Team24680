@@ -50,6 +50,8 @@ static void sigHandler(int sig){
 		}
 		remain.tv_sec = (next_time-cur_time)/1000000;
 		remain.tv_nsec = (next_time-cur_time - remain.tv_sec) * 1000;
+		printf("remain: %2ld.%09ld\n", (long)remain.tv_sec,
+        			remain.tv_nsec);
     }
 	return;
 }
