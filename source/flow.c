@@ -77,8 +77,8 @@ int main(int argc, char *argv[]){
 
     if (signal(SIGUSR1, sigHandler) == SIG_ERR)
     	errExit("SIGUSR1 Initialize");
-    if (signal(SIGINT, sigHandler) == SIG_ERR)
-    	errExit("SIGINT Initialize");
+    if (signal(SIGSTP, sigHandler) == SIG_ERR)
+    	errExit("SIGSTP Initialize");
 
     switch (fork()) {           /* Parent and child share mapping */
     case -1:
@@ -94,6 +94,8 @@ int main(int argc, char *argv[]){
         for(;;){
         	// printf("here: %d %d\n", (int)sec_interval, (int) nano_interval);
         	while(1){
+                printf("sleep remain: %2ld.%09ld\n", (long)remain.tv_sec,
+                    remain.tv_nsec);
         		request = remain;
                 printf("sleep request: %2ld.%09ld\n", (long)request.tv_sec,
                     request.tv_nsec);
