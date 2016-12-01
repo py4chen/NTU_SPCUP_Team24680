@@ -104,8 +104,11 @@ int main(int argc, char *argv[]){
                     remain.tv_nsec);
                 printf("wakeup request: %2ld.%09ld\n", (long)request.tv_sec,
                     request.tv_nsec);
-        		if (s != -1)
+        		if (s != -1){
+                    printf("good sleep\n");
         			break;
+                }
+                printf("bad sleep\n");
         	}
         	if(sigprocmask(SIG_BLOCK, &blockSet, &prevMask) == -1)
         		errExit("sigprocmask1");
