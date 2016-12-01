@@ -77,8 +77,8 @@ int main(int argc, char *argv[]){
 
     if (signal(SIGUSR1, sigHandler) == SIG_ERR)
     	errExit("SIGUSR1 Initialize");
-    if (signal(SIGSTP, sigHandler) == SIG_ERR)
-    	errExit("SIGSTP Initialize");
+    // if (signal(SIGSTP, sigHandler) == SIG_ERR)
+    // 	errExit("SIGSTP Initialize");
 
     switch (fork()) {           /* Parent and child share mapping */
     case -1:
