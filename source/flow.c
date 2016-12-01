@@ -50,7 +50,7 @@ static void sigHandler(int sig){
 		}
 		remain.tv_sec = (next_time-cur_time)/1000000;
 		remain.tv_nsec = (next_time-cur_time - remain.tv_sec) * 1000;
-		printf("remain: %2ld.%09ld, current time is: %llu\n", (long)remain.tv_sec,
+		printf("updated remain: %2ld.%09ld, current time is: %llu\n", (long)remain.tv_sec,
         			remain.tv_nsec, cur_time-addr->start_time);
     }
 	return;
@@ -94,13 +94,12 @@ int main(int argc, char *argv[]){
         for(;;){
         	// printf("here: %d %d\n", (int)sec_interval, (int) nano_interval);
         	while(1){
-        		// printf("remain: %2ld.%09ld\n", (long)remain.tv_sec,
-        		// 	remain.tv_nsec);
         		request = remain;
+                printf("sleep request: %2ld.%09ld\n", (long)request.tv_sec,
+                    request.tv_nsec);
         		int s = nanosleep(&request, &remain);
         		if (s != -1)
         			break;
-        		
         	}
         	if(sigprocmask(SIG_BLOCK, &blockSet, &prevMask) == -1)
         		errExit("sigprocmask1");
