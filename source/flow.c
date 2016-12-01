@@ -32,7 +32,7 @@ unsigned long long last_beat_time, cur_time, next_time;
 // Signal set
 sigset_t blockSet, prevMask;
 
-static void sigHandler(int sig){
+void sigHandler(int sig){
 	// set Beat time sleep
 	if(sig == SIGUSR1){
 		// calculate seconds per bit
