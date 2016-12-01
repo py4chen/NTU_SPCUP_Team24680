@@ -103,10 +103,13 @@ int main(int argc, char *argv[]){
                     request.tv_nsec);
         		int s = nanosleep(&request, &remain);
                 if (nuremain.tv_sec != 0 || nuremain.tv_nsec != 0){
+                    printf("wakeup nuremain: %2ld.%09ld\n", (long)nuremain.tv_sec,
+                    nuremain.tv_nsec);
                     remain.tv_sec = nuremain.tv_sec;
                     remain.tv_nsec = nuremain.tv_nsec;
                     nuremain.tv_sec = 0;
                     nuremain.tv_nsec = 0;
+                    // printf("nuremain -> remain\n");
                 }
                 printf("wakeup remain: %2ld.%09ld\n", (long)remain.tv_sec,
                     remain.tv_nsec);
