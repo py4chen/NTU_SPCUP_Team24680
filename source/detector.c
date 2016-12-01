@@ -174,9 +174,9 @@ while (loops > 0) {
     	addr->last_frame = aubio_tempo_get_last(o);
     	kill(pid, SIGUSR1);
 
-      	fprintf(stderr, "beat at %.3fms, %.3fs, frame %d, %.2fbpm with confidence %.2f\n",
-          aubio_tempo_get_last_ms(o), aubio_tempo_get_last_s(o),
-          aubio_tempo_get_last(o), aubio_tempo_get_bpm(o), aubio_tempo_get_confidence(o));
+      	// fprintf(stderr, "beat at %.3fms, %.3fs, frame %d, %.2fbpm with confidence %.2f\n",
+       //    aubio_tempo_get_last_ms(o), aubio_tempo_get_last_s(o),
+       //    aubio_tempo_get_last(o), aubio_tempo_get_bpm(o), aubio_tempo_get_confidence(o));
     }
 	}
 	

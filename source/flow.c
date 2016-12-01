@@ -100,6 +100,10 @@ int main(int argc, char *argv[]){
                 printf("sleep request: %2ld.%09ld\n", (long)request.tv_sec,
                     request.tv_nsec);
         		int s = nanosleep(&request, &remain);
+                printf("wakeup remain: %2ld.%09ld\n", (long)remain.tv_sec,
+                    remain.tv_nsec);
+                printf("wakeup request: %2ld.%09ld\n", (long)request.tv_sec,
+                    request.tv_nsec);
         		if (s != -1)
         			break;
         	}
