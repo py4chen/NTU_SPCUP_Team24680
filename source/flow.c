@@ -91,23 +91,23 @@ int main(int argc, char *argv[]){
     default:                    /* Parent: wait for child to terminate */
         remain.tv_sec = sec_interval;
         remain.tv_nsec = nano_interval;
-        nuremain.tv_sec = NULL;
-        nuremain.tv_nsec = NULL;
+        nuremain.tv_sec = 0;
+        nuremain.tv_nsec = 0;
         for(;;){
         	// printf("here: %d %d\n", (int)sec_interval, (int) nano_interval);
         	while(1){
-                if (nuremain.tv_sec != NULL or nuremain.tv_nsec != NULL){
-                    remain.tv_sec = nuremain.tv_sec;
-                    remain.tv_nsec = nuremain.tv_nsec;
-                    nuremain.tv_sec = NULL;
-                    nuremain.tv_nsec = NULL;
-                }
                 printf("sleep remain: %2ld.%09ld\n", (long)remain.tv_sec,
                     remain.tv_nsec);
         		request = remain;
                 printf("sleep request: %2ld.%09ld\n", (long)request.tv_sec,
                     request.tv_nsec);
         		int s = nanosleep(&request, &remain);
+                if (nuremain.tv_sec != 0 || nuremain.tv_nsec != 0){
+                    remain.tv_sec = nuremain.tv_sec;
+                    remain.tv_nsec = nuremain.tv_nsec;
+                    nuremain.tv_sec = 0;
+                    nuremain.tv_nsec = 0;
+                }
                 printf("wakeup remain: %2ld.%09ld\n", (long)remain.tv_sec,
                     remain.tv_nsec);
                 printf("wakeup request: %2ld.%09ld\n", (long)request.tv_sec,
