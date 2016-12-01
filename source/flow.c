@@ -68,7 +68,7 @@ int main(int argc, char *argv[]){
     /* Initialize lastBeatTime & msbp(millisecond per beat)*/
     last_beat_time = 0;
     cur_time = 0;
-    sec_interval = 1;
+    sec_interval = 100;
     nano_interval = 0;
 
     /* Initialize Signal Set*/
