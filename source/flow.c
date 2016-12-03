@@ -85,7 +85,7 @@ int main(int argc, char *argv[]){
         errExit("fork");
 
     case 0:                     /* Child: increment shared integer and exit */
-        detector(getpid(), addr);
+        detector(getppid(), addr);
         exit(1);
 
     default:                    /* Parent: wait for child to terminate */
