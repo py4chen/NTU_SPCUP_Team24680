@@ -58,6 +58,11 @@ void sigHandler(int sig){
     }
 	return;
 }
+static void exit_handler(void)
+{
+    kill(child_pid, SIGINT);
+    printf("EXIT HANDLER\n");
+}
 
 int main(int argc, char *argv[]){               
     addr = mmap(NULL, sizeof(Message), PROT_READ | PROT_WRITE,
