@@ -170,7 +170,7 @@ while (loops > 0) {
     aubio_tempo_do(o,in,out);
 		n_frames+= hop_size;
     if (out->data[0] != 0) {
-	if (skip == 0){
+	if (skip % 2 == 0){
 		addr->bpm = aubio_tempo_get_bpm(o);
 	    	addr->last_ms = aubio_tempo_get_last_ms(o);
 	    	addr->last_frame = aubio_tempo_get_last(o);
@@ -179,10 +179,8 @@ while (loops > 0) {
 	      	fprintf(stderr, "beat at %.3fms, %.3fs, frame %d, %.2fbpm with confidence %.2f\n",
 		   aubio_tempo_get_last_ms(o), aubio_tempo_get_last_s(o),
 		   aubio_tempo_get_last(o), aubio_tempo_get_bpm(o), aubio_tempo_get_confidence(o));
-		skip = 1;
-	}else{
-		skip = 0;
 	}	
+	skip++;
     }
 }
 	

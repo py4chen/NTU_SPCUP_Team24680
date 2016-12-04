@@ -19,8 +19,9 @@ void _ledACT(){
 }
 
 void ledACT(Message *addr){
-
-	printf("LED0! Current Time:%llu  Relative Time:%llu \n\n", 
+	FILE *fp = fopen("./text.txt", "aw");
+	fprintf(fp ,"LED0! Current Time:%llu  Relative Time:%llu \n\n", 
 		getCurrentTimestamp(), getCurrentTimestamp()-addr->start_time);
+	fclose(fp);
 }
 

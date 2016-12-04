@@ -20,6 +20,7 @@
 /* Global Variable */
 // Pointer to shared memory region
 Message *addr;   
+int handler_flag = 0;
 
 // Beat Time Variables
 long long sec_interval;
@@ -35,6 +36,7 @@ sigset_t blockSet, prevMask;
 void sigHandler(int sig){
 	// set Beat time sleep
 	if(sig == SIGUSR1){
+		handler_flag = 1;
 		// calculate seconds per bit
 		double spb = (double)60 / addr->bpm;
 		sec_interval = (int) spb;
@@ -49,7 +51,7 @@ void sigHandler(int sig){
 			next_time += spb*1000000;
 		}
 		remain.tv_sec = (next_time-cur_time)/1000000;
-		remain.tv_nsec = (next_time-cur_time - remain.tv_sec) * 1000;
+		remain.tv_nsec = (next_time-cur_time - remain.tv_sec*1000000) * 1000;
 		printf("updated remain: %2ld.%09ld, current time is: %llu, updated interval:%lld.%lld\n", (long)remain.tv_sec,
         			remain.tv_nsec, cur_time-addr->start_time, sec_interval, nano_interval);
     }
@@ -97,15 +99,19 @@ int main(int argc, char *argv[]){
 		        //printf("sleep remain: %2ld.%09ld\n", (long)remain.tv_sec,
 		        //    remain.tv_nsec);
 				request = remain;
+				printf("request==remain:%d\n", &remain==&request);
 		        //printf("sleep request: %2ld.%09ld\n", (long)request.tv_sec,
 		        //    request.tv_nsec);
 			    int s = nanosleep(&request, &remain);
-		        //printf("wakeup remain: %2ld.%09ld\n", (long)remain.tv_sec,
-		        //    remain.tv_nsec);
-		        //printf("wakeup request: %2ld.%09ld\n", (long)request.tv_sec,
-		        //    request.tv_nsec);
+		        if(handler_flag == 1){
+				printf("wakeup remain: %2ld.%09ld\n", (long)remain.tv_sec,
+		        	    	remain.tv_nsec);
+		        	printf("wakeup request: %2ld.%09ld\n", (long)request.tv_sec,
+		            		request.tv_nsec);
+				handler_flag = 0;	
+			}
 				if (s != -1){
-		            //fprintf("good sleep\n");
+		            fprintf(stderr, "good sleep\n");
 					break;
 		        }
 		        //fprintf(stdout, "bad sleep\n");
