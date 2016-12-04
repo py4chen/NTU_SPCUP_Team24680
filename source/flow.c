@@ -48,10 +48,10 @@ void sigHandler(int sig){
 		while(next_time < cur_time){
 			next_time += spb*1000000;
 		}
-		nuremain.tv_sec = (next_time-cur_time)/1000000;
-		nuremain.tv_nsec = (next_time-cur_time - remain.tv_sec) * 1000;
-		printf("updated nuremain: %2ld.%09ld, current time is: %llu, updated interval:%lld.%lld\n", (long)nuremain.tv_sec,
-        			nuremain.tv_nsec, cur_time-addr->start_time, sec_interval, nano_interval);
+		remain.tv_sec = (next_time-cur_time)/1000000;
+		remain.tv_nsec = (next_time-cur_time - remain.tv_sec) * 1000;
+		printf("updated remain: %2ld.%09ld, current time is: %llu, updated interval:%lld.%lld\n", (long)remain.tv_sec,
+        			remain.tv_nsec, cur_time-addr->start_time, sec_interval, nano_interval);
     }
 	return;
 }
@@ -91,8 +91,6 @@ int main(int argc, char *argv[]){
     default:                    /* Parent: wait for child to terminate */
         remain.tv_sec = sec_interval;
         remain.tv_nsec = nano_interval;
-        nuremain.tv_sec = 0;
-        nuremain.tv_nsec = 0;
         for(;;){
         	// printf("here: %d %d\n", (int)sec_interval, (int) nano_interval);
         	while(1){
@@ -101,16 +99,7 @@ int main(int argc, char *argv[]){
 				request = remain;
 		        //printf("sleep request: %2ld.%09ld\n", (long)request.tv_sec,
 		        //    request.tv_nsec);
-			int s = nanosleep(&request, &remain);
-		        if (nuremain.tv_sec != 0 || nuremain.tv_nsec != 0){
-		            //printf("wakeup nuremain: %2ld.%09ld\n", (long)nuremain.tv_sec,
-		            //nuremain.tv_nsec);
-		            remain.tv_sec = nuremain.tv_sec;
-		            remain.tv_nsec = nuremain.tv_nsec;
-		            nuremain.tv_sec = 0;
-		            nuremain.tv_nsec = 0;
-		            // printf("nuremain -> remain\n");
-		        }
+			    int s = nanosleep(&request, &remain);
 		        //printf("wakeup remain: %2ld.%09ld\n", (long)remain.tv_sec,
 		        //    remain.tv_nsec);
 		        //printf("wakeup request: %2ld.%09ld\n", (long)request.tv_sec,
