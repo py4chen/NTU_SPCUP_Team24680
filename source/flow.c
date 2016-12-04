@@ -21,6 +21,7 @@
 // Pointer to shared memory region
 Message *addr;   
 int handler_flag = 0;
+int child_pid;
 
 // Beat Time Variables
 long long sec_interval;
@@ -82,7 +83,8 @@ int main(int argc, char *argv[]){
     // if (signal(SIGSTP, sigHandler) == SIG_ERR)
     // 	errExit("SIGSTP Initialize");
 
-    switch (fork()) {           /* Parent and child share mapping */
+    child_pid = fork();
+    switch (child_pid) {           /* Parent and child share mapping */
     case -1:
         errExit("fork");
 
@@ -91,6 +93,7 @@ int main(int argc, char *argv[]){
         exit(1);
 
     default:                    /* Parent: wait for child to terminate */
+        atexit(exit_handler);
         remain.tv_sec = sec_interval;
         remain.tv_nsec = nano_interval;
         for(;;){
