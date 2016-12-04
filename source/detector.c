@@ -109,6 +109,7 @@ int sec = duration / 1000000;
 int LPerS = loops / sec;
 int LPer2S = LPerS * 2;
 addr->start_time = getCurrentTimestamp();
+int skip = 0;
 while (loops > 0) {
 	loops--;
 	rc = snd_pcm_readi(handle, buffer, frames);
@@ -169,16 +170,21 @@ while (loops > 0) {
     aubio_tempo_do(o,in,out);
 		n_frames+= hop_size;
     if (out->data[0] != 0) {
-    	addr->bpm = aubio_tempo_get_bpm(o);
-    	addr->last_ms = aubio_tempo_get_last_ms(o);
-    	addr->last_frame = aubio_tempo_get_last(o);
-    	kill(pid, SIGUSR1);
-
-      	// fprintf(stderr, "beat at %.3fms, %.3fs, frame %d, %.2fbpm with confidence %.2f\n",
-       //    aubio_tempo_get_last_ms(o), aubio_tempo_get_last_s(o),
-       //    aubio_tempo_get_last(o), aubio_tempo_get_bpm(o), aubio_tempo_get_confidence(o));
+	if (skip == 0){
+		addr->bpm = aubio_tempo_get_bpm(o);
+	    	addr->last_ms = aubio_tempo_get_last_ms(o);
+	    	addr->last_frame = aubio_tempo_get_last(o);
+	    	kill(pid, SIGUSR1);
+		fprintf(stderr, "Current time : %llu\n",getCurrentTimestamp()-addr->start_time);
+	      	fprintf(stderr, "beat at %.3fms, %.3fs, frame %d, %.2fbpm with confidence %.2f\n",
+		   aubio_tempo_get_last_ms(o), aubio_tempo_get_last_s(o),
+		   aubio_tempo_get_last(o), aubio_tempo_get_bpm(o), aubio_tempo_get_confidence(o));
+		skip = 1;
+	}else{
+		skip = 0;
+	}	
     }
-	}
+}
 	
 }
 fprintf(stderr, "read %.2fs, %d frames at %dHz (%d blocks)\n",
