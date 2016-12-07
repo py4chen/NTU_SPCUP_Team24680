@@ -18,4 +18,5 @@ ledtest:
 clean:
 	rm -f ./flow || true
 	rm -f ./ledtest || true
+	rm -f ./log_led.txt || true
 
