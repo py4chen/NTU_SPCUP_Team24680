@@ -1,11 +1,6 @@
-#define LED_C
-
 #include <stdio.h>
-#include <unistd.h>
-
-#ifndef STRUCTURE_LIB
+#include <stdlib.h>
 #include "structure.h"
-#endif
 
 void ledACT(Message *addr){
 	FILE *f = fopen("/sys/class/leds/led0/shot", "w");
@@ -18,10 +13,11 @@ void ledACT(Message *addr){
 	fprintf(f, "%s", text);
 	fclose(f);
 
-	FILE *f_led = fopen("./log_led.txt", "aw");
 	long long t = getCurrentTimestamp() - addr->start_time;
-	fprintf(f_led, "%lld.%lld\n", t/1000000, t-t/1000000);
-	fclose(f_led);
+  long long t_sec = t/1000000;
+	fprintf(f_led, "%lld.%lld\n", t_sec, t-t_sec*1000000);
+	fflush(f_led);
+  return;
 }
 
 void _ledACT(Message *addr){

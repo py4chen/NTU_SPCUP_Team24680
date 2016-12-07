@@ -6,16 +6,13 @@
 #include <alsa/asoundlib.h>
 #include <sys/stat.h>
 #include <string.h>
-#include <stdlib.h>
 #include <fcntl.h>
 #include <math.h>
 #include <unistd.h>
 #include <aubio.h>
 #include <signal.h>
 
-#ifndef STRUCTURE_LIB
 #include "structure.h"
-#endif
 
 int detector(int pid, Message *addr) {
 long loops;
@@ -111,7 +108,7 @@ int sec = duration / 1000000;
 int LPerS = loops / sec;
 int LPer2S = LPerS * 2;
 addr->start_time = getCurrentTimestamp();
-int skip = 0;
+//int skip = 0;
 while (loops > 0) {
 	loops--;
 	rc = snd_pcm_readi(handle, buffer, frames);
@@ -172,7 +169,7 @@ while (loops > 0) {
     aubio_tempo_do(o,in,out);
 		n_frames+= hop_size;
     if (out->data[0] != 0) {
-	if (skip % 2 == 0){
+//  if (skip % 2 == 0){
 		addr->bpm = aubio_tempo_get_bpm(o);
 	    	addr->last_ms = aubio_tempo_get_last_ms(o);
 	    	addr->last_frame = aubio_tempo_get_last(o);
@@ -181,8 +178,10 @@ while (loops > 0) {
 	      	fprintf(stderr, "beat at %.3fms, %.3fs, frame %d, %.2fbpm with confidence %.2f\n",
 		   aubio_tempo_get_last_ms(o), aubio_tempo_get_last_s(o),
 		   aubio_tempo_get_last(o), aubio_tempo_get_bpm(o), aubio_tempo_get_confidence(o));
-	}	
-	skip++;
+	        fprintf(f_aubio, "%.3f\n",aubio_tempo_get_last_s(o));
+          fflush(f_aubio);
+//	}	
+//	skip++;
     }
 }
 	
@@ -206,6 +205,8 @@ del_aubio_tempo(o);
 del_fvec(in);
 del_fvec(out);
 aubio_cleanup();
+
+fclose(f_aubio);
 
 return 0;
 }

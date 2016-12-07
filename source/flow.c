@@ -1,21 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <sys/wait.h>
 #include <sys/mman.h>
-#include <stddef.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <string.h>
-
-#ifndef LED_C
-#include "led.c"
-#endif
-#ifndef STRUCTURE_LIB
+#include <time.h>
+#include <sys/time.h>
 #include "structure.h"
-#endif
-#ifndef DETECTOR_C
-#include "detector.c"
-#endif
 
 /* Discard Threshold */
 double theta_discard = 0.9;  
@@ -38,6 +31,16 @@ int nondiscard_flag = 0;
 
 // Signal set
 sigset_t blockSet, prevMask;
+
+unsigned long long getCurrentTimestamp(){
+	if(gettimeofday(&tv, NULL) == -1)
+       errExit("last_beat_time gettimeofday");
+    return 1000000 * tv.tv_sec + tv.tv_usec;
+}
+void errExit(char *str){
+	printf("%s ERROR.", str);
+	exit(-1);
+}
 
 void sigHandler(int sig){
 	// set Beat time sleep
@@ -80,6 +83,8 @@ static void exit_handler(void)
 }
 
 int main(int argc, char *argv[]){               
+    f_led= fopen("./log_led.txt", "w");
+    f_aubio= fopen("./log_aubio.txt", "w");
     addr = mmap(NULL, sizeof(Message), PROT_READ | PROT_WRITE,
                 MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     if (addr == MAP_FAILED)

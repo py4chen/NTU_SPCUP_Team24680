@@ -1,12 +1,5 @@
-#define STRUCTURE_LIB
-#include <sys/time.h>
-#include <time.h>
 
-void errExit(char *str){
-	printf("%s ERROR.", str);
-	exit(-1);
-}
-
+void errExit(char *str);
 typedef struct message{
 	double last_ms;
 	int last_frame;
@@ -16,11 +9,10 @@ typedef struct message{
 }Message;
 
 struct timeval tv;
-unsigned long long getCurrentTimestamp(){
-	if(gettimeofday(&tv, NULL) == -1)
-       errExit("last_beat_time gettimeofday");
-    return 1000000 * tv.tv_sec + tv.tv_usec;
-}
+unsigned long long getCurrentTimestamp();
+int detector(int pid, Message *addr);
+void ledACT(Message *addr);
+FILE *f_led, *f_aubio;
 
 /*
 struct timespec{
