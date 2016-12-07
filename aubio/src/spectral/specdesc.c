@@ -78,6 +78,8 @@ struct _aubio_specdesc_t {
       const cvec_t * fftgrain, fvec_t * onset);
   smpl_t threshold;      /**< minimum norm threshold for phase and specdiff */
   fvec_t *oldmag;        /**< previous norm vector */
+  fvec_t *oldmag2;       /**< previous norm vector */
+  fvec_t *oldmag3;       /**< previous norm vector */
   fvec_t *dev1 ;         /**< current onset detection measure vector */
   fvec_t *theta1;        /**< previous phase vector, one frame behind */
   fvec_t *theta2;        /**< previous phase vector, two frames behind */
@@ -215,16 +217,43 @@ void aubio_specdesc_mkl(aubio_specdesc_t *o, const cvec_t * fftgrain, fvec_t * o
 /* Spectral flux */
 void aubio_specdesc_specflux(aubio_specdesc_t *o, const cvec_t * fftgrain, fvec_t * onset){ 
   uint_t j;
+  smpl_t tmp;
   onset->data[0] = 0.;
+  // original specflux
   /*for (j=0;j<fftgrain->length;j++) {
     if (fftgrain->norm[j] > o->oldmag->data[j])
       onset->data[0] += fftgrain->norm[j] - o->oldmag->data[j];
     o->oldmag->data[j] = fftgrain->norm[j];
   }*/
-  for (j=0;j<fftgrain->length-1;j++) {
+  
+  // |X(n,k)|-|X(n-2,l)| with 200 fps
+  /*for (j=0;j<fftgrain->length-1;j++) {
     if (fftgrain->norm[j+1] > o->oldmag->data[j])
       onset->data[0] += fftgrain->norm[j+1] - o->oldmag->data[j];
     o->oldmag->data[j] = fftgrain->norm[j];
+  }*/
+  
+  // |X(n,k)|-max(|X(n-y,1)|) for y = 1~3 with 200 fps
+  for (j=0;j<fftgrain->length;j++) {
+    if (fftgrain->norm[j] > o->oldmag->data[j]) && (fftgrain->norm[j] > o->oldmag2->data[j]) && (fftgrain->norm[j] > o->oldmag3->data[j])    {
+      tmp = o->oldmag->data[j]; 
+      if(o->oldmag2->data[j]>tmp)
+        tmp = o->oldmag2->data[j];
+      if(o->oldmag3->data[j]>tmp)
+        tmp = o->oldmag3->data[j];
+      onset->data[0] += fftgrain->norm[j] - tmp;
+    }
+    if(j == 0)
+      o->oldmag->data[j] = fftgrain->norm[j];
+    else if (j == 1){
+      o->oldmag2->data[j] = ;
+      o->oldmag->data[j] = fftgrain->norm[j];
+    }
+    else{
+      o->oldmag3->data[j] = o->oldmag2->data[j];
+      o->oldmag2->data[j] = o->oldmag->data[j];
+      o->oldmag->data[j] = fftgrain->norm[j];
+    }
   }
 }
 
@@ -312,6 +341,8 @@ new_aubio_specdesc (const char_t * onset_mode, uint_t size){
     case aubio_onset_mkl:
     case aubio_onset_specflux:
       o->oldmag = new_fvec(rsize);
+      o->oldmag2 = new_fvec(rsize);
+      o->oldmag3 = new_fvec(rsize);
       break;
     default:
       break;
@@ -397,6 +428,8 @@ void del_aubio_specdesc (aubio_specdesc_t *o){
     case aubio_onset_mkl:
     case aubio_onset_specflux:
       del_fvec(o->oldmag);
+      del_fvec(o->oldmag2);
+      del_fvec(o->oldmag3);
       break;
     default:
       break;
