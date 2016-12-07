@@ -9,6 +9,13 @@ flow: ./flow.c
 run:
 	sudo ./flow
 
+ledtest:
+	sh -c 'echo oneshot > /sys/class/leds/led0/trigger'
+	sudo sh -c 'echo 1 > /sys/class/leds/led0/shot'
+	gcc led_test.c -o ledtest
+	./ledtest
+
 clean:
 	rm -f ./flow || true
+	rm -f ./ledtest || true
 
