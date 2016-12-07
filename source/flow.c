@@ -17,10 +17,11 @@
 #include "detector.c"
 #endif
 
+/* Discard Threshold */
+double theta_discard = 0.9;  
 /* Global Variable */
 // Pointer to shared memory region
 Message *addr;   
-int handler_flag = 0;
 int child_pid;
 
 // Beat Time Variables
@@ -30,6 +31,10 @@ long long nano_interval;
 // Nanosleep Sturct
 struct timespec request, remain, nuremain;
 unsigned long long last_beat_time, cur_time, next_time;
+
+// flag
+int handler_flag = 0;
+int nondiscard_flag = 0;
 
 // Signal set
 sigset_t blockSet, prevMask;
@@ -45,16 +50,26 @@ void sigHandler(int sig){
 		//printf("new sec_interval:%lld, nano_interval:%lld\n", sec_interval,
 		//	nano_interval);
 
-		// calculate remain time
+		// calculate next time
 		cur_time = getCurrentTimestamp();
 		next_time = addr->start_time + addr->last_ms * 1000;
 		while(next_time < cur_time){
 			next_time += spb*1000000;
 		}
-		remain.tv_sec = (next_time-cur_time)/1000000;
-		remain.tv_nsec = (next_time-cur_time - remain.tv_sec*1000000) * 1000;
-		printf("updated remain: %2ld.%09ld, current time is: %llu, updated interval:%lld.%lld\n", (long)remain.tv_sec,
+
+        // check if discard old_next_beat_time
+        old_next_time = cur_time + remain.tv_sec*1000000 + remain.tv_nsec/1000;
+        if((next_time > old_next_time) && ((next_time - old_next_time) > (old_next_time - last_beat_time) * theta_discard)){
+            nondiscard_flag = 1;
+            nuremain.tv_sec = (next_time-old_next_time)/1000000;
+            nuremain.tv_nsec = (next_time-old_next_time - nuremain.tv_sec*1000000) * 1000;
+        }
+        else{
+		  remain.tv_sec = (next_time-cur_time)/1000000;
+		  remain.tv_nsec = (next_time-cur_time - remain.tv_sec*1000000) * 1000;
+		  printf("updated remain: %2ld.%09ld, current time is: %llu, updated interval:%lld.%lld\n", (long)remain.tv_sec,
         			remain.tv_nsec, cur_time-addr->start_time, sec_interval, nano_interval);
+        }
     }
 	return;
 }
@@ -129,9 +144,16 @@ int main(int argc, char *argv[]){
         	if(gettimeofday(&tv, NULL) == -1)
         		errExit("last_beat_time gettimeofday");
         	last_beat_time = getCurrentTimestamp();
-        	ledACT(addr);
-        	remain.tv_sec = sec_interval;
-        	remain.tv_nsec = nano_interval;
+            ledACT(addr);
+            if(nondiscard_flag == 1){
+                nondiscard_flag = 0;
+                remain.tv_sec = nuremain.tv_sec;
+                remain.tv_nsec = nuremain.tv_nsec;
+            }
+            else{
+        	   remain.tv_sec = sec_interval;
+        	   remain.tv_nsec = nano_interval;
+            }
         	if(sigprocmask(SIG_SETMASK, &prevMask, NULL) == -1)
         		errExit("sigprocmask2");
         }
