@@ -34,7 +34,7 @@ unsigned char *allBuffer;
 int duration = 30000000;
 
 /* Open PCM device for recording (capture). */
-rc = snd_pcm_open(&handle, "default", SND_PCM_STREAM_CAPTURE, 0);
+rc = snd_pcm_open(&handle, "plughw:1,0", SND_PCM_STREAM_CAPTURE, 0);
 if (rc < 0) {
 	fprintf(stderr,
 			"unable to open pcm device: %s\n",
@@ -58,6 +58,8 @@ snd_pcm_hw_params_set_format(handle, params, SND_PCM_FORMAT_S16_LE);
 
 /* Two channels (stereo) */
 snd_pcm_hw_params_set_channels(handle, params, 1);
+unsigned int wwww; //get_channels!
+snd_pcm_hw_params_get_channels(params, &wwww);
 
 /* 44100 bits/second sampling rate (CD quality) */
 snd_pcm_hw_params_set_rate_near(handle, params, &samplerate, &dir);
