@@ -12,12 +12,15 @@
 
 /* Discard Threshold */
 double theta_discard = 0.9;  
+double theta_bpm_tolerant_small = 0.03;
+double theta_bpm_tolerant_large = 0.40;
 /* Global Variable */
 // Pointer to shared memory region
 Message *addr;   
 int child_pid;
 
 // Beat Time Variables
+float bpm;
 long long sec_interval;
 long long nano_interval;
 
@@ -47,8 +50,17 @@ void sigHandler(int sig){
 	if(sig == SIGUSR1){
 		handler_flag = 1;
 		// calculate seconds per bit
+        if( (addr->bpm < bpm * (1+theta_bpm_tolerant_small) &&
+           addr->bpm > bpm * (1-theta_bpm_tolerant_small) ) ||
+            (addr->bpm > bpm *(1+theta_bpm_tolerant_large) &&
+            (addr->bpm < bpm *(1-theta_bpm_tolerant_large)) ) ){
+                printf("Discard bpm update at %lld\n ", getCurrentTimestamp() - addr->start_time);
+            return;
+        }
+
 		double spb = (double)60 / addr->bpm;
-		sec_interval = (int) spb;
+		bpm = addr->bpm;
+        sec_interval = (int) spb;
 		nano_interval = (spb - sec_interval) * 1000000000;
 		//printf("new sec_interval:%lld, nano_interval:%lld\n", sec_interval,
 		//	nano_interval);
@@ -66,12 +78,13 @@ void sigHandler(int sig){
             nondiscard_flag = 1;
             nuremain.tv_sec = (next_time-old_next_time)/1000000;
             nuremain.tv_nsec = (next_time-old_next_time - nuremain.tv_sec*1000000) * 1000;
+            printf("Non discard old_next_time at %lld\n ", getCurrentTimestamp() - addr->start_time);
         }
         else{
 		  remain.tv_sec = (next_time-cur_time)/1000000;
 		  remain.tv_nsec = (next_time-cur_time - remain.tv_sec*1000000) * 1000;
-		  printf("updated remain: %2ld.%09ld, current time is: %llu, updated interval:%lld.%lld\n", (long)remain.tv_sec,
-        			remain.tv_nsec, cur_time-addr->start_time, sec_interval, nano_interval);
+		  // printf("updated remain: %2ld.%09ld, current time is: %llu, updated interval:%lld.%lld\n", (long)remain.tv_sec,
+    //     			remain.tv_nsec, cur_time-addr->start_time, sec_interval, nano_interval);
         }
     }
 	return;
@@ -127,19 +140,19 @@ int main(int argc, char *argv[]){
 		        //printf("sleep remain: %2ld.%09ld\n", (long)remain.tv_sec,
 		        //    remain.tv_nsec);
 				request = remain;
-				printf("request==remain:%d\n", &remain==&request);
+				// printf("request==remain:%d\n", &remain==&request);
 		        //printf("sleep request: %2ld.%09ld\n", (long)request.tv_sec,
 		        //    request.tv_nsec);
 			    int s = nanosleep(&request, &remain);
 		        if(handler_flag == 1){
-				printf("wakeup remain: %2ld.%09ld\n", (long)remain.tv_sec,
-		        	    	remain.tv_nsec);
-		        	printf("wakeup request: %2ld.%09ld\n", (long)request.tv_sec,
-		            		request.tv_nsec);
-				handler_flag = 0;	
-			}
+				    // printf("wakeup remain: %2ld.%09ld\n", (long)remain.tv_sec,
+		      //   	    	remain.tv_nsec);
+		      //       printf("wakeup request: %2ld.%09ld\n", (long)request.tv_sec,
+		      //       		request.tv_nsec);
+				    handler_flag = 0;	
+			    }
 				if (s != -1){
-		            fprintf(stderr, "good sleep\n");
+		            // fprintf(stderr, "good sleep\n");
 					break;
 		        }
 		        //fprintf(stdout, "bad sleep\n");
@@ -154,7 +167,7 @@ int main(int argc, char *argv[]){
                 nondiscard_flag = 0;
                 remain.tv_sec = nuremain.tv_sec;
                 remain.tv_nsec = nuremain.tv_nsec;
-            }
+            } 
             else{
         	   remain.tv_sec = sec_interval;
         	   remain.tv_nsec = nano_interval;
