@@ -62,7 +62,7 @@ snd_pcm_hw_params_get_channels(params, &wwww);
 snd_pcm_hw_params_set_rate_near(handle, params, &samplerate, &dir);
 
 /* Set period size to 32 frames. */
-frames = 64;
+frames = hop_size;
 snd_pcm_hw_params_set_period_size_near(handle, params, &frames, &dir);
 
 
@@ -139,8 +139,8 @@ while (loops > 0) {
 		close(fd);
 		fileNo = fileNo + 1;
 	}
-	if (i % 8 == 0){
-		unsigned char* char_ptr = allBuffer + size * (i - 8);
+	if (i % 1 == 0){
+		unsigned char* char_ptr = allBuffer + size * (i - 1);
 		//int length = size * 64;
 		//int s;
 		//smpl_t data[512];

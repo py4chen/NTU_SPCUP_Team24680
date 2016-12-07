@@ -189,6 +189,7 @@ aubio_tempo_t * new_aubio_tempo (const char_t * tempo_mode,
   o->winlen = aubio_next_power_of_two(5.8 * samplerate / hop_size);
   if (o->winlen < 4) o->winlen = 4;
   o->step = o->winlen/4;
+  fprintf(stderr, "aubio BT win: %d, step: %d\n", o->winlen, o->step);
   o->blockpos = 0;
   o->threshold = 0.3;
   o->silence = -90.;

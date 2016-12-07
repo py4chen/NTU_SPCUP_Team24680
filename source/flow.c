@@ -13,14 +13,14 @@
 /* Discard Threshold */
 double theta_discard = 0.9;  
 double theta_bpm_tolerant_small = 0.03;
-double theta_bpm_tolerant_large = 0.40;
+double theta_bpm_tolerant_large = 0.80;
 /* Global Variable */
 // Pointer to shared memory region
 Message *addr;   
 int child_pid;
 
 // Beat Time Variables
-float bpm;
+float bpm=0;
 long long sec_interval;
 long long nano_interval;
 
@@ -50,10 +50,18 @@ void sigHandler(int sig){
 	if(sig == SIGUSR1){
 		handler_flag = 1;
 		// calculate seconds per bit
-        if( (addr->bpm < bpm * (1+theta_bpm_tolerant_small) &&
-           addr->bpm > bpm * (1-theta_bpm_tolerant_small) ) ||
-            (addr->bpm > bpm *(1+theta_bpm_tolerant_large) &&
-            (addr->bpm < bpm *(1-theta_bpm_tolerant_large)) ) ){
+        if( bpm != 0 && 
+            (
+              (
+                addr->bpm < bpm * (1+theta_bpm_tolerant_small) &&
+                addr->bpm > bpm * (1-theta_bpm_tolerant_small)
+               ) ||
+              (
+                addr->bpm > bpm *(1+theta_bpm_tolerant_large) &&
+                addr->bpm < bpm *(1-theta_bpm_tolerant_large)
+               )
+             )
+          ){
                 printf("Discard bpm update at %lld\n ", getCurrentTimestamp() - addr->start_time);
             return;
         }
