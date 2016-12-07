@@ -216,9 +216,14 @@ void aubio_specdesc_mkl(aubio_specdesc_t *o, const cvec_t * fftgrain, fvec_t * o
 void aubio_specdesc_specflux(aubio_specdesc_t *o, const cvec_t * fftgrain, fvec_t * onset){ 
   uint_t j;
   onset->data[0] = 0.;
-  for (j=0;j<fftgrain->length;j++) {
+  /*for (j=0;j<fftgrain->length;j++) {
     if (fftgrain->norm[j] > o->oldmag->data[j])
       onset->data[0] += fftgrain->norm[j] - o->oldmag->data[j];
+    o->oldmag->data[j] = fftgrain->norm[j];
+  }*/
+  for (j=0;j<fftgrain->length-1;j++) {
+    if (fftgrain->norm[j+1] > o->oldmag->data[j])
+      onset->data[0] += fftgrain->norm[j+1] - o->oldmag->data[j];
     o->oldmag->data[j] = fftgrain->norm[j];
   }
 }
