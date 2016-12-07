@@ -30,7 +30,7 @@ long long nano_interval;
 
 // Nanosleep Sturct
 struct timespec request, remain, nuremain;
-unsigned long long last_beat_time, cur_time, next_time;
+unsigned long long last_beat_time, cur_time, next_time, old_next_time;
 
 // flag
 int handler_flag = 0;
