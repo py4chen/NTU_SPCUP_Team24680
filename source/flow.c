@@ -100,10 +100,14 @@ void sigHandler(int sig){
 static void exit_handler(void)
 {
     kill(child_pid, SIGINT);
+    end_sound();
     printf("EXIT HANDLER\n");
 }
 
-int main(int argc, char *argv[]){               
+int main(int argc, char *argv[]){   
+
+    start_sound();
+
     f_led= fopen("./log_led.txt", "w");
     f_aubio= fopen("./log_aubio.txt", "w");
     addr = mmap(NULL, sizeof(Message), PROT_READ | PROT_WRITE,
@@ -170,6 +174,7 @@ int main(int argc, char *argv[]){
         	if(gettimeofday(&tv, NULL) == -1)
         		errExit("last_beat_time gettimeofday");
         	last_beat_time = getCurrentTimestamp();
+            beat_sound();
             ledACT(addr);
             if(nondiscard_flag == 1){
                 nondiscard_flag = 0;
