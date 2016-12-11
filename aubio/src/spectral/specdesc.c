@@ -235,7 +235,7 @@ void aubio_specdesc_specflux(aubio_specdesc_t *o, const cvec_t * fftgrain, fvec_
   
   // |X(n,k)|-max(|X(n-y,1)|) for y = 1~3 with 200 fps
   for (j=0;j<fftgrain->length;j++) {
-    if (fftgrain->norm[j] > o->oldmag->data[j]) && (fftgrain->norm[j] > o->oldmag2->data[j]) && (fftgrain->norm[j] > o->oldmag3->data[j])    {
+    if ((fftgrain->norm[j] > o->oldmag->data[j]) && (fftgrain->norm[j] > o->oldmag2->data[j]) && (fftgrain->norm[j] > o->oldmag3->data[j]) )   {
       tmp = o->oldmag->data[j]; 
       if(o->oldmag2->data[j]>tmp)
         tmp = o->oldmag2->data[j];
@@ -246,7 +246,7 @@ void aubio_specdesc_specflux(aubio_specdesc_t *o, const cvec_t * fftgrain, fvec_
     if(j == 0)
       o->oldmag->data[j] = fftgrain->norm[j];
     else if (j == 1){
-      o->oldmag2->data[j] = ;
+      o->oldmag2->data[j] = o->oldmag->data[j];
       o->oldmag->data[j] = fftgrain->norm[j];
     }
     else{
