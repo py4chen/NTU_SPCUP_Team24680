@@ -1,3 +1,6 @@
+void end_sound();
+void start_sound();
+void beat_sound();
 
 void errExit(char *str);
 typedef struct message{

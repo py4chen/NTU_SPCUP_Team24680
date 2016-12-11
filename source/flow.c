@@ -18,6 +18,7 @@ double theta_bpm_tolerant_large = 0.80;
 // Pointer to shared memory region
 Message *addr;   
 int child_pid;
+int flow_pid;
 
 // Beat Time Variables
 float bpm=0;
@@ -100,14 +101,17 @@ void sigHandler(int sig){
 static void exit_handler(void)
 {
     kill(child_pid, SIGINT);
-    end_sound();
-    printf("EXIT HANDLER\n");
+    if(flow_pid == getpid()){
+      end_sound();
+      printf("EXIT HANDLER\n");
+    }
 }
 
 int main(int argc, char *argv[]){   
 
     start_sound();
 
+    flow_pid = getpid();
     f_led= fopen("./log_led.txt", "w");
     f_aubio= fopen("./log_aubio.txt", "w");
     addr = mmap(NULL, sizeof(Message), PROT_READ | PROT_WRITE,
