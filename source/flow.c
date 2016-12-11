@@ -10,6 +10,9 @@
 #include <sys/time.h>
 #include "structure.h"
 
+/* Sound Effect Trigger */
+short SOUND_EFFECT = 0; // 1: open, 0: close
+
 /* Discard Threshold */
 double theta_discard = 0.9;  
 double theta_bpm_tolerant_small = 0.03;
@@ -18,7 +21,7 @@ double theta_bpm_tolerant_large = 0.80;
 // Pointer to shared memory region
 Message *addr;   
 int child_pid;
-int flow_pid;
+int sound_pid;
 
 // Beat Time Variables
 float bpm=0;
@@ -96,22 +99,30 @@ void sigHandler(int sig){
     //     			remain.tv_nsec, cur_time-addr->start_time, sec_interval, nano_interval);
         }
     }
+    else if(sig == SIGUSR2){
+        if(SOUND_EFFECT == 1){
+            beat_sound();
+        }
+    }
+    else if(sig == SIGINT){
+        if(SOUND_EFFECT==1){
+            end_sound();
+        }
+        printf("CTR+C KILL\n");
+    }
 	return;
 }
 static void exit_handler(void)
 {
     kill(child_pid, SIGINT);
-    if(flow_pid == getpid()){
-      end_sound();
-      printf("EXIT HANDLER\n");
-    }
+    kill(sound_pid, SIGINT);
 }
 
 int main(int argc, char *argv[]){   
+    if(SOUND_EFFECT==1){
+        start_sound();
+    }
 
-    start_sound();
-
-    flow_pid = getpid();
     f_led= fopen("./log_led.txt", "w");
     f_aubio= fopen("./log_aubio.txt", "w");
     addr = mmap(NULL, sizeof(Message), PROT_READ | PROT_WRITE,
@@ -134,8 +145,7 @@ int main(int argc, char *argv[]){
 
     if (signal(SIGUSR1, sigHandler) == SIG_ERR)
     	errExit("SIGUSR1 Initialize");
-    // if (signal(SIGSTP, sigHandler) == SIG_ERR)
-    // 	errExit("SIGSTP Initialize");
+
 
     child_pid = fork();
     switch (child_pid) {           /* Parent and child share mapping */
@@ -147,6 +157,21 @@ int main(int argc, char *argv[]){
         exit(1);
 
     default:                    /* Parent: wait for child to terminate */
+        sound_pid = fork();
+        if(sound_pid == -1){
+            errExit("sound fork");
+        }
+        else if(sound_pid == 0){
+            if (signal(SIGUSR2, sigHandler) == SIG_ERR)
+                errExit("SIGUSR2 Initialize");
+            if (signal(SIGINT, sigHandler) == SIG_ERR)
+                errExit("SIGINT Initialize");
+            while(1){
+                sleep(100);
+            }
+            exit(1);
+        }
+
         atexit(exit_handler);
         remain.tv_sec = sec_interval;
         remain.tv_nsec = nano_interval;
@@ -178,7 +203,7 @@ int main(int argc, char *argv[]){
         	if(gettimeofday(&tv, NULL) == -1)
         		errExit("last_beat_time gettimeofday");
         	last_beat_time = getCurrentTimestamp();
-            beat_sound();
+            kill(sound_pid, SIGUSR2);
             ledACT(addr);
             if(nondiscard_flag == 1){
                 nondiscard_flag = 0;
