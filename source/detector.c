@@ -21,8 +21,8 @@ int size;
 snd_pcm_t *handle;
 snd_pcm_hw_params_t *params;
 unsigned int samplerate = 16000;
-unsigned int win_size = 1024;
-unsigned int hop_size = 512;
+unsigned int win_size = 800;
+unsigned int hop_size = 80;
 unsigned int n_frames = 0;
 int dir;
 snd_pcm_uframes_t frames;
@@ -102,11 +102,7 @@ fvec_t * out = new_fvec (1); // output position
 aubio_tempo_t * o = new_aubio_tempo("default", win_size, hop_size, samplerate);
 
 char filename[10];
-int fileNo = 1;
 int i = 0;
-int sec = duration / 1000000;
-int LPerS = loops / sec;
-int LPer2S = LPerS * 2;
 addr->start_time = getCurrentTimestamp();
 //int skip = 0;
 while (loops > 0) {
@@ -126,19 +122,6 @@ while (loops > 0) {
 	memcpy(allBuffer + size * i, buffer, size);	
 	i = i + 1;
 
-	if (i == LPer2S*fileNo){
-		
-		sprintf(filename, "./Raw/record_%03d", fileNo);
-		int fd = open(filename, O_WRONLY | O_CREAT, 0777);
-		if(i < LPerS*5){
-			write(fd, allBuffer, size * i);
-		}else{
-			write(fd, allBuffer + size * (i - LPerS*5), LPerS*5*size);
-		}
-		
-		close(fd);
-		fileNo = fileNo + 1;
-	}
 	if (i % 1 == 0){
 		unsigned char* char_ptr = allBuffer + size * (i - 1);
 		//int length = size * 64;
@@ -186,6 +169,11 @@ while (loops > 0) {
 }
 	
 }
+sprintf(filename, "./Raw/record");
+int fd = open(filename, O_WRONLY | O_CREAT, 0777);
+write(fd, allBuffer, duration / val*size);
+close(fd);
+
 fprintf(stderr, "read %.2fs, %d frames at %dHz (%d blocks)\n",
 		n_frames * 1. / samplerate,
 		n_frames, samplerate,
