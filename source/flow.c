@@ -16,7 +16,7 @@ short SOUND_EFFECT = 0; // 1: open, 0: close
 /* Discard Threshold */
 double theta_discard = 0.9;  
 double theta_bpm_tolerant_small = 0.03;
-double theta_bpm_tolerant_large = 0.80;
+double theta_bpm_tolerant_large = 0.80; // TODO: Do not change first 10 secs
 /* Global Variable */
 // Pointer to shared memory region
 Message *addr;   
@@ -54,7 +54,7 @@ void sigHandler(int sig){
 	if(sig == SIGUSR1){
 		handler_flag = 1;
 		// calculate seconds per bit
-        if( bpm != 0 && 
+        if( bpm != 0 && getCurrentTimestamp() - addr->start_time > 10*1000000 && 
             (
               (
                 addr->bpm < bpm * (1+theta_bpm_tolerant_small) &&
