@@ -169,7 +169,7 @@ while (loops > 0) {
 	
 }
 sprintf(filename, "./Raw/record");
-int fd = open(filename, O_WRONLY | O_CREAT, 0777);
+int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0777);
 int fileSize = duration /bufferDuration*size;
 write(fd, allBuffer, fileSize);
 close(fd);
