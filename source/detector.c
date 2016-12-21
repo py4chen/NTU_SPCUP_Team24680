@@ -82,9 +82,8 @@ buffer = (unsigned char *) malloc(size);
 
 
 /* We want to loop for 5 seconds */
-unsigned int val;
-snd_pcm_hw_params_get_period_time(params, &val, &dir);
-loops = duration / val;
+int bufferDuration = 1000000*size/samplerate/2;
+loops = duration / bufferDuration;
 allBuffer = (unsigned char *) malloc(size * loops);
 if (allBuffer==NULL){
 	fprintf(stderr, "Fail\n");
@@ -171,8 +170,10 @@ while (loops > 0) {
 }
 sprintf(filename, "./Raw/record");
 int fd = open(filename, O_WRONLY | O_CREAT, 0777);
-write(fd, allBuffer, duration / val*size);
+int fileSize = duration /bufferDuration*size;
+write(fd, allBuffer, fileSize);
 close(fd);
+fprintf(stderr, "Written to file, size: %d\n", fileSize);
 
 fprintf(stderr, "read %.2fs, %d frames at %dHz (%d blocks)\n",
 		n_frames * 1. / samplerate,
