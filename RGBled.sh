@@ -44,7 +44,6 @@ RGB_DISABLE=0
 
 if [[ "$1" == "R" ]]; then
 	echo "$2" > /sys/class/gpio/gpio$LED_RED/value
-	echo "$2"  /sys/class/gpio/gpio$LED_RED/value
 elif [[ "$1" == "G" ]]; then
 	echo "$2" > /sys/class/gpio/gpio$LED_GREEN/value
 elif [[ "$1" == "B" ]]; then
@@ -62,7 +61,7 @@ else
 				echo "$LED_RED" > /sys/class/gpio/export
 				echo "$LED_GREEN" > /sys/class/gpio/export
 				echo "$LED_BLUE" > /sys/class/gpio/export
-				echo "out" > /sys/class/gpio/gpio$LED01/direction
+				# echo "out" > /sys/class/gpio/gpio$LED01/direction
 				echo "out" > /sys/class/gpio/gpio$LED_RED/direction
 				echo "out" > /sys/class/gpio/gpio$LED_GREEN/direction
 				echo "out" > /sys/class/gpio/gpio$LED_BLUE/direction
