@@ -71,6 +71,8 @@ void ledRGBACT(Message *addr){
 
 	
 	fprintf(fR, "%s", text1);
+	fflush(fR);
+
 
 	struct timespec toSleep;
 	toSleep.tv_sec = 0;
@@ -78,6 +80,7 @@ void ledRGBACT(Message *addr){
 	nanosleep(&toSleep, NULL);
 
 	fprintf(fR, "%s", text0);
+	fflush(fR);
 
 	fclose(fR);
 	if(sigprocmask(SIG_SETMASK, &LED_prevMask, NULL) == -1)
