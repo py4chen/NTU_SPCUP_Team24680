@@ -2,6 +2,10 @@ void end_sound();
 void start_sound();
 void beat_sound();
 
+void ledRGB_setup();
+void ledRGB_exit();
+void ledRGBACT();
+
 void errExit(char *str);
 typedef struct message{
 	double last_ms;
