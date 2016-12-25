@@ -1,7 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "structure.h"
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <string.h>
 #include <time.h>
+#include <sys/time.h>
+#include "structure.h"
+
 
 
 void ledACT(Message *addr){
@@ -50,6 +58,12 @@ void ledRGB_exit(){
 
 
 void ledRGBACT(Message *addr){
+	sigset_t LED_blockSet, LED_prevMask;
+	sigemptyset(&LED_blockSet);
+    sigaddset(&LED_blockSet, SIGHUP);
+    if(sigprocmask(SIG_BLOCK, &LED_blockSet, &LED_prevMask) == -1)
+		errExit("LED sigprocmask1");
+
 	FILE *fR = fopen("/sys/class/gpio/gpio22/value", "w");
 
 	const char *text0 = "0";
@@ -66,6 +80,8 @@ void ledRGBACT(Message *addr){
 	fprintf(fR, "%s", text0);
 
 	fclose(fR);
+	if(sigprocmask(SIG_SETMASK, &LED_prevMask, NULL) == -1)
+        errExit("LED sigprocmask2");
 
   return;
 }
