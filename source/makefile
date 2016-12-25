@@ -17,7 +17,7 @@ flow: ./flow.c ./led.c ./detector.c ./structure.h
 
 	#LED RGB
 	#Set up GPIO to Outputs
-	# Set up GPIO Pin, to output and put in disable state
+	#Set up GPIO Pin, to output and put in disable state
 	echo $(LED_RED) > /sys/class/gpio/export
 	echo $(LED_GREEN) > /sys/class/gpio/export
 	echo $(LED_BLUE) > /sys/class/gpio/export
@@ -41,6 +41,7 @@ ledRGBtest:
 	echo 1 > /sys/class/gpio/gpio$(LED_RED)/value
 	echo 1 > /sys/class/gpio/gpio$(LED_GREEN)/value
 	echo 1 > /sys/class/gpio/gpio$(LED_BLUE)/value
+	sleep 1
 	echo 0 > /sys/class/gpio/gpio$(LED_RED)/value
 	echo 0 > /sys/class/gpio/gpio$(LED_GREEN)/value
 	echo 0 > /sys/class/gpio/gpio$(LED_BLUE)/value
