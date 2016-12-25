@@ -20,7 +20,7 @@ int rc;
 int size;
 snd_pcm_t *handle;
 snd_pcm_hw_params_t *params;
-unsigned int samplerate = 16000;
+unsigned int samplerate = 44100; //16000;
 unsigned int win_size = 800;
 unsigned int hop_size = 80;
 unsigned int n_frames = 0;

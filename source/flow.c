@@ -54,7 +54,7 @@ void sigHandler(int sig){
 	if(sig == SIGUSR1){
 		handler_flag = 1;
 		// calculate seconds per bit
-        if( bpm != 0 && getCurrentTimestamp() - addr->start_time > 10*1000000 && 
+        if(1==0 &&  bpm != 0 && getCurrentTimestamp() - addr->start_time > 10*1000000 && 
             (
               (
                 addr->bpm < bpm * (1+theta_bpm_tolerant_small) &&
