@@ -56,6 +56,8 @@ void ledRGBACT(Message *addr){
 	
 	fprintf(fR, "%s", text1);
 
+	sleep(1);
+
 	fprintf(fR, "%s", text0);
 
 	fclose(fR);
