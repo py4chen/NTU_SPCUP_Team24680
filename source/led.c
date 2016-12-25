@@ -35,12 +35,14 @@ void _ledACT(Message *addr){
 void ledRGB_setup(){
 	FILE *fB = fopen("/sys/class/gpio/gpio17/value", "w");
 	const char *text = "1";
+	fprintf(fB, "%s", text);
 	fclose(fB);
 }
 
 void ledRGB_exit(){
 	FILE *fB = fopen("/sys/class/gpio/gpio17/value", "w");
 	const char *text = "0";
+	fprintf(fB, "%s", text);
 	fclose(fB);
 }
 
