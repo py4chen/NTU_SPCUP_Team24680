@@ -22,6 +22,7 @@ double theta_bpm_tolerant_large = 0.80; // TODO: Do not change first 10 secs
 Message *addr;   
 int child_pid;
 int sound_pid;
+int ledRGB_pid;
 
 // Beat Time Variables
 float bpm=0;
@@ -110,18 +111,25 @@ void sigHandler(int sig){
         }
         printf("CTR+C KILL\n");
     }
+    else if(sig == SIGHUP){
+        ledRGBACT(addr);
+    }
 	return;
 }
 static void exit_handler(void)
 {
     kill(child_pid, SIGINT);
     kill(sound_pid, SIGINT);
+    kill(ledRGB_pid,SIGINT);
+    ledRGB_exit();
 }
 
 int main(int argc, char *argv[]){   
     if(SOUND_EFFECT==1){
         start_sound();
     }
+    
+    ledRGB_setup();
 
     f_led= fopen("./log_led.txt", "w");
     f_aubio= fopen("./log_aubio.txt", "w");
@@ -161,6 +169,7 @@ int main(int argc, char *argv[]){
         if(sound_pid == -1){
             errExit("sound fork");
         }
+        // sound effect
         else if(sound_pid == 0){
             if (signal(SIGUSR2, sigHandler) == SIG_ERR)
                 errExit("SIGUSR2 Initialize");
@@ -171,6 +180,22 @@ int main(int argc, char *argv[]){
             }
             exit(1);
         }
+
+        // ledRGB
+        ledRGB_pid = fork();
+        if(ledRGB_pid == -1){
+            errExit("ledRGB fork");
+        }
+        // sound effect
+        else if(ledRGB_pid == 0){
+            if (signal(SIGHUP, sigHandler) == SIG_ERR)
+                errExit("SIGHUP Initialize");
+            while(1){
+                sleep(100);
+            }
+            exit(1);
+        }
+
 
         atexit(exit_handler);
         remain.tv_sec = sec_interval;
@@ -204,6 +229,7 @@ int main(int argc, char *argv[]){
         		errExit("last_beat_time gettimeofday");
         	last_beat_time = getCurrentTimestamp();
             kill(sound_pid, SIGUSR2);
+            kill(ledRGB_pid, SIGHUP);
             ledACT(addr);
             if(nondiscard_flag == 1){
                 nondiscard_flag = 0;

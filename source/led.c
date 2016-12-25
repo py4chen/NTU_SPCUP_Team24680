@@ -14,7 +14,7 @@ void ledACT(Message *addr){
 	fclose(f);
 
 	long long t = getCurrentTimestamp() - addr->start_time;
-  long long t_sec = t/1000000;
+  	long long t_sec = t/1000000;
 	fprintf(f_led, "%lld.%lld\n", t_sec, t-t_sec*1000000);
 	fflush(f_led);
   return;
@@ -26,4 +26,41 @@ void _ledACT(Message *addr){
 		getCurrentTimestamp(), getCurrentTimestamp()-addr->start_time);
 	fclose(fp);
 }
+
+
+// FILE *fR = fopen("/sys/class/gpio/gpio22/value", "w");
+// FILE *fG = fopen("/sys/class/gpio/gpio27/value", "w");
+// FILE *fB = fopen("/sys/class/gpio/gpio17/value", "w");
+
+void ledRGB_setup(){
+	FILE *fB = fopen("/sys/class/gpio/gpio17/value", "w");
+	const char *text = "1";
+	fclose(fB);
+}
+
+void ledRGB_exit(){
+	FILE *fB = fopen("/sys/class/gpio/gpio17/value", "w");
+	const char *text = "0";
+	fclose(fB);
+}
+
+
+void ledRGBACT(Message *addr){
+	FILE *fR = fopen("/sys/class/gpio/gpio22/value", "w");
+
+	const char *text = "1";
+	
+	fprintf(fR, "%s", text);
+
+	*text = "0";
+
+	fprintf(fR, "%s", text);
+
+	fclose(fR);
+
+  return;
+}
+
+
+
 
