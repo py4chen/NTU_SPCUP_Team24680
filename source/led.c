@@ -50,13 +50,13 @@ void ledRGB_exit(){
 void ledRGBACT(Message *addr){
 	FILE *fR = fopen("/sys/class/gpio/gpio22/value", "w");
 
-	char *text = "1";
+	const char *text0 = "0";
+	const char *text1 = "1";
+
 	
-	fprintf(fR, "%s", text);
+	fprintf(fR, "%s", text1);
 
-	*text = "0";
-
-	fprintf(fR, "%s", text);
+	fprintf(fR, "%s", text0);
 
 	fclose(fR);
 
