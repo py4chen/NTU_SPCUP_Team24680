@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "structure.h"
+#include <time.h>
+
 
 void ledACT(Message *addr){
 	FILE *f = fopen("/sys/class/leds/led0/shot", "w");
