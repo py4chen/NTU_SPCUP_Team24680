@@ -38,19 +38,19 @@ ledtest:
 	./ledtest
 
 ledRGBtest:
-	echo 1 > /sys/class/gpio/gpio$LED_RED/value
-	echo 1 > /sys/class/gpio/gpio$LED_GREEN/value
-	echo 1 > /sys/class/gpio/gpio$LED_BLUE/value
-	echo 0 > /sys/class/gpio/gpio$LED_RED/value
-	echo 0 > /sys/class/gpio/gpio$LED_GREEN/value
-	echo 0 > /sys/class/gpio/gpio$LED_BLUE/value
+	echo 1 > /sys/class/gpio/gpio$(LED_RED)/value
+	echo 1 > /sys/class/gpio/gpio$(LED_GREEN)/value
+	echo 1 > /sys/class/gpio/gpio$(LED_BLUE)/value
+	echo 0 > /sys/class/gpio/gpio$(LED_RED)/value
+	echo 0 > /sys/class/gpio/gpio$(LED_GREEN)/value
+	echo 0 > /sys/class/gpio/gpio$(LED_BLUE)/value
 
 
 clean:
 	rm -f ./flow || true
 	rm -f ./ledtest || true
 
-	echo $LED_RED > /sys/class/gpio/unexport
-	echo $LED_GREEN > /sys/class/gpio/unexport
-	echo $LED_BLUE > /sys/class/gpio/unexport
+	echo $(LED_RED) > /sys/class/gpio/unexport
+	echo $(LED_GREEN) > /sys/class/gpio/unexport
+	echo $(LED_BLUE) > /sys/class/gpio/unexport
 
