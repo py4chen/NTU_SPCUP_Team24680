@@ -25,6 +25,8 @@ void ledACT(Message *addr){
 
 	long long t = getCurrentTimestamp() - addr->start_time;
   	long long t_sec = t/1000000;
+
+	//fprintf(stdout, "%lld.%lld\n", t_sec, t-t_sec*1000000);
 	fprintf(f_led, "%lld.%lld\n", t_sec, t-t_sec*1000000);
 	fflush(f_led);
   return;
