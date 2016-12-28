@@ -48,14 +48,26 @@ void ledRGB_setup(){
 	FILE *fB = fopen("/sys/class/gpio/gpio17/value", "w");
 	const char *text = "1";
 	fprintf(fB, "%s", text);
+	fflush(fB);
 	fclose(fB);
 }
 
 void ledRGB_exit(){
 	FILE *fB = fopen("/sys/class/gpio/gpio17/value", "w");
+	FILE *fR = fopen("/sys/class/gpio/gpio22/value", "w");
+	FILE *fG = fopen("/sys/class/gpio/gpio27/value", "w");
+
 	const char *text = "0";
 	fprintf(fB, "%s", text);
+	fprintf(fR, "%s", text);
+	fprintf(fG, "%s", text);
+	fflush(fR);
+	fflush(fG);
+	fflush(fB);
+
 	fclose(fB);
+	fclose(fR);
+	fclose(fG);
 }
 
 
