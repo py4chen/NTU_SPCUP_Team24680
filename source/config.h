@@ -1,3 +1,8 @@
+/*
+ * use these variables as global variables in flow.c
+ * declare these variables as extern before using them in other files
+ *
+ */
 
 /* record */
 unsigned int samplerate = 44100; //16000;
