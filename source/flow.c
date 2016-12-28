@@ -9,6 +9,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include "structure.h"
+#include "config.h"
 
 /* Sound Effect Trigger */
 short SOUND_EFFECT = 0; // 1: open, 0: close
@@ -140,8 +141,8 @@ int main(int argc, char *argv[]){
     
     ledRGB_setup();
 
-    f_led= fopen("./log_led.txt", "w");
-    f_aubio= fopen("./log_aubio.txt", "w");
+    f_led= fopen(led_log, "w");
+    f_aubio= fopen(aubio_log, "w");
     addr = mmap(NULL, sizeof(Message), PROT_READ | PROT_WRITE,
                 MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     if (addr == MAP_FAILED)

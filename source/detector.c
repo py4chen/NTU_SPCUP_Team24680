@@ -14,21 +14,25 @@
 
 #include "structure.h"
 
+// defined in config.h
+extern unsigned int samplerate;
+extern const unsigned int win_size;
+extern const unsigned int hop_size;
+extern const int duration;
+extern unsigned int bitspersample;
+extern const char *record_file;
+
 int detector(int pid, Message *addr) {
 long loops;
 int rc;
 int size;
 snd_pcm_t *handle;
 snd_pcm_hw_params_t *params;
-unsigned int samplerate = 44100; //16000;
-unsigned int win_size = 800;
-unsigned int hop_size = 80;
 unsigned int n_frames = 0;
 int dir;
 snd_pcm_uframes_t frames;
 unsigned char *buffer;
 unsigned char *allBuffer;
-int duration = 30000000;
 
 /* Open PCM device for recording (capture). */
 rc = snd_pcm_open(&handle, "plughw:1,0", SND_PCM_STREAM_CAPTURE, 0);
@@ -90,9 +94,6 @@ if (allBuffer==NULL){
 	exit(1);
 }
 
-/* aubio init */
-unsigned int bitspersample = 16;
-
 // create some vectors
 fvec_t * in = new_fvec (hop_size); // input audio buffer
 fvec_t * out = new_fvec (1); // output position
@@ -100,7 +101,6 @@ fvec_t * out = new_fvec (1); // output position
 // create tempo object
 aubio_tempo_t * o = new_aubio_tempo("default", win_size, hop_size, samplerate);
 
-char filename[10];
 int i = 0;
 addr->start_time = getCurrentTimestamp();
 //int skip = 0;
@@ -168,8 +168,7 @@ while (loops > 0) {
 }
 	
 }
-sprintf(filename, "./Raw/record");
-int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+int fd = open(record_file, O_WRONLY | O_CREAT | O_TRUNC, 0777);
 int fileSize = duration /bufferDuration*size;
 write(fd, allBuffer, fileSize);
 close(fd);

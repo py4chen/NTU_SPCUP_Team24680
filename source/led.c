@@ -11,7 +11,6 @@
 #include "structure.h"
 
 
-
 void ledACT(Message *addr){
 	FILE *f = fopen("/sys/class/leds/led0/shot", "w");
 	if (f == NULL)
