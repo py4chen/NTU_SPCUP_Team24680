@@ -81,7 +81,7 @@ void ledRGBACT(Message *addr){
 
 	struct timespec toSleep;
 	toSleep.tv_sec = 0;
-    toSleep.tv_nsec = 250000000;
+    toSleep.tv_nsec = 200000000;
 	nanosleep(&toSleep, NULL);
 
 	fprintf(fR, "%s", text0);

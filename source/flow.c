@@ -99,6 +99,8 @@ void sigHandler(int sig){
             discard_flag = 1;
             remain.tv_sec = (next_time-cur_time)/1000000;
             remain.tv_nsec = (next_time-cur_time - remain.tv_sec*1000000) * 1000;
+            printf("discard next_predicted_time at %lld\n ", getCurrentTimestamp() - addr->start_time);
+
         }
         else{
 		  remain.tv_sec = (next_time-cur_time)/1000000;
@@ -235,7 +237,7 @@ int main(int argc, char *argv[]){
             if (discard_flag == 1){ // so close that discard next beat
                 discard_flag = 0;
             }
-            else{ // call beat
+            else{ // call beater
             	if(gettimeofday(&tv, NULL) == -1)
             		errExit("last_beat_time gettimeofday");
             	last_beat_time = getCurrentTimestamp();
