@@ -50,6 +50,8 @@ extern uint_t mix_input;
 // midi tap
 extern smpl_t miditap_note;
 extern smpl_t miditap_velo;
+// confidence
+extern int show_confidence;
 
 extern uint_t force_overwrite;
 
@@ -115,6 +117,9 @@ void usage (FILE * stream, int exit_code)
 #ifdef PROG_HAS_JACK
       "       -j      --jack             use Jack\n"
 #endif /* PROG_HAS_JACK */
+#ifdef PROG_HAS_CONFIDENCE
+      "       -c      --show-confidence  show confidence\n"
+#endif /* PROG_HAS_CONFIDENCE */
       "       -v      --verbose          be verbose\n"
       "       -h      --help             display this message\n"
       );
@@ -150,6 +155,9 @@ parse_args (int argc, char **argv)
 #ifdef PROG_HAS_OUTPUT
     "mf"
 #endif /* PROG_HAS_OUTPUT */
+#ifdef PROG_HAS_CONFIDENCE
+		"c"
+#endif /* PROG_HAS_CONFIDENCE */
     ;
   int next_option;
   struct option long_options[] = {
@@ -182,6 +190,9 @@ parse_args (int argc, char **argv)
     {"mix-input",             0, NULL, 'm'},
     {"force-overwrite",       0, NULL, 'f'},
 #endif /* PROG_HAS_OUTPUT */
+#ifdef PROG_HAS_CONFIDENCE
+    {"show-confidence",       0, NULL, 'c'},
+#endif /* PROG_HAS_CONFIDENCE */
     {NULL,                    0, NULL, 0}
   };
 #endif /* HAVE_GETOPT_H */
@@ -252,6 +263,9 @@ parse_args (int argc, char **argv)
         break;
       case 'm':                /* mix_input flag */
         mix_input = 1;
+        break;
+      case 'c':                /* show confidence */
+        show_confidence = 1;
         break;
       case '?':                /* unknown options */
         usage (stderr, 1);

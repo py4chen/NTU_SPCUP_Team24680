@@ -24,6 +24,7 @@
 #define PROG_HAS_SILENCE 1
 #define PROG_HAS_OUTPUT 1
 #define PROG_HAS_JACK 1
+#define PROG_HAS_CONFIDENCE 1
 #include "parse_args.h"
 
 aubio_tempo_t * tempo;
@@ -57,6 +58,9 @@ void process_block(fvec_t * ibuf, fvec_t *obuf) {
 void process_print (void) {
   if ( is_beat && !is_silence ) {
     print_time (aubio_tempo_get_last (tempo));
+		if( show_confidence ) {
+			outmsg(", %.2f", aubio_tempo_get_confidence(tempo));
+		}
     outmsg ("\n");
   }
 }
