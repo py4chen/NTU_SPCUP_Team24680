@@ -14,7 +14,8 @@
 short SOUND_EFFECT = 0; // 1: open, 0: close
 
 /* Discard Threshold */
-double theta_discard = 0.9;  
+double theta_nondiscard = 0.9;  
+double theta_discard = 0.1;  
 double theta_bpm_tolerant_small = 0.03;
 double theta_bpm_tolerant_large = 0.80; // TODO: Do not change first 10 secs
 /* Global Variable */
@@ -22,6 +23,7 @@ double theta_bpm_tolerant_large = 0.80; // TODO: Do not change first 10 secs
 Message *addr;   
 int child_pid;
 int sound_pid;
+int ledRGB_pid;
 
 // Beat Time Variables
 float bpm=0;
@@ -35,6 +37,7 @@ unsigned long long last_beat_time, cur_time, next_time, old_next_time;
 // flag
 int handler_flag = 0;
 int nondiscard_flag = 0;
+int discard_flag = 0;
 
 // Signal set
 sigset_t blockSet, prevMask;
@@ -54,7 +57,7 @@ void sigHandler(int sig){
 	if(sig == SIGUSR1){
 		handler_flag = 1;
 		// calculate seconds per bit
-        if( bpm != 0 && getCurrentTimestamp() - addr->start_time > 10*1000000 && 
+        if(1==0 &&  bpm != 0 && getCurrentTimestamp() - addr->start_time > 10*1000000 && 
             (
               (
                 addr->bpm < bpm * (1+theta_bpm_tolerant_small) &&
@@ -86,16 +89,23 @@ void sigHandler(int sig){
 
         // check if discard old_next_beat_time
         old_next_time = cur_time + remain.tv_sec*1000000 + remain.tv_nsec/1000;
-        if((next_time > old_next_time) && ((next_time - old_next_time) > (old_next_time - last_beat_time) * theta_discard)){
+        if((next_time > old_next_time) && ((next_time - old_next_time) > (old_next_time - last_beat_time) * theta_nondiscard)){
             nondiscard_flag = 1;
             nuremain.tv_sec = (next_time-old_next_time)/1000000;
             nuremain.tv_nsec = (next_time-old_next_time - nuremain.tv_sec*1000000) * 1000;
             printf("Non discard old_next_time at %lld\n ", getCurrentTimestamp() - addr->start_time);
         }
+        else if ((next_time < old_next_time) && (next_time - last_beat_time) < (sec_interval*1000000 + nano_interval / 1000) * theta_discard){
+            discard_flag = 1;
+            remain.tv_sec = (next_time-cur_time)/1000000;
+            remain.tv_nsec = (next_time-cur_time - remain.tv_sec*1000000) * 1000;
+            printf("discard next_predicted_time at %lld\n ", getCurrentTimestamp() - addr->start_time);
+
+        }
         else{
 		  remain.tv_sec = (next_time-cur_time)/1000000;
 		  remain.tv_nsec = (next_time-cur_time - remain.tv_sec*1000000) * 1000;
-		  // printf("updated remain: %2ld.%09ld, current time is: %llu, updated interval:%lld.%lld\n", (long)remain.tv_sec,
+		  // printf("updated remain: %2ld.%09ld, is: %llu, updated interval:%lld.%lld\n", (long)remain.tv_sec,
     //     			remain.tv_nsec, cur_time-addr->start_time, sec_interval, nano_interval);
         }
     }
@@ -110,18 +120,25 @@ void sigHandler(int sig){
         }
         printf("CTR+C KILL\n");
     }
+    else if(sig == SIGHUP){
+        ledRGBACT(addr);
+    }
 	return;
 }
 static void exit_handler(void)
 {
     kill(child_pid, SIGINT);
     kill(sound_pid, SIGINT);
+    kill(ledRGB_pid,SIGINT);
+    ledRGB_exit();
 }
 
 int main(int argc, char *argv[]){   
     if(SOUND_EFFECT==1){
         start_sound();
     }
+    
+    ledRGB_setup();
 
     f_led= fopen("./log_led.txt", "w");
     f_aubio= fopen("./log_aubio.txt", "w");
@@ -161,6 +178,7 @@ int main(int argc, char *argv[]){
         if(sound_pid == -1){
             errExit("sound fork");
         }
+        // sound effect
         else if(sound_pid == 0){
             if (signal(SIGUSR2, sigHandler) == SIG_ERR)
                 errExit("SIGUSR2 Initialize");
@@ -171,6 +189,22 @@ int main(int argc, char *argv[]){
             }
             exit(1);
         }
+
+        // ledRGB
+        ledRGB_pid = fork();
+        if(ledRGB_pid == -1){
+            errExit("ledRGB fork");
+        }
+        // sound effect
+        else if(ledRGB_pid == 0){
+            if (signal(SIGHUP, sigHandler) == SIG_ERR)
+                errExit("SIGHUP Initialize");
+            while(1){
+                sleep(100);
+            }
+            exit(1);
+        }
+
 
         atexit(exit_handler);
         remain.tv_sec = sec_interval;
@@ -200,11 +234,17 @@ int main(int argc, char *argv[]){
         	}
         	if(sigprocmask(SIG_BLOCK, &blockSet, &prevMask) == -1)
         		errExit("sigprocmask1");
-        	if(gettimeofday(&tv, NULL) == -1)
-        		errExit("last_beat_time gettimeofday");
-        	last_beat_time = getCurrentTimestamp();
-            kill(sound_pid, SIGUSR2);
-            ledACT(addr);
+            if (discard_flag == 1){ // so close that discard next beat
+                discard_flag = 0;
+            }
+            else{ // call beater
+            	if(gettimeofday(&tv, NULL) == -1)
+            		errExit("last_beat_time gettimeofday");
+            	last_beat_time = getCurrentTimestamp();
+                kill(sound_pid, SIGUSR2);
+                kill(ledRGB_pid, SIGHUP);
+                ledACT(addr);
+            }
             if(nondiscard_flag == 1){
                 nondiscard_flag = 0;
                 remain.tv_sec = nuremain.tv_sec;
