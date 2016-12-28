@@ -57,7 +57,7 @@ void process_print (void) {
   if ( is_beat && !is_silence ) {
     print_time (aubio_tempo_get_last (tempo));
 		if( show_confidence ) {
-			outmsg(", %.2f", aubio_tempo_get_confidence(tempo));
+			outmsg(", %.9f", aubio_tempo_get_confidence(tempo));
 		}
     outmsg ("\n");
   }

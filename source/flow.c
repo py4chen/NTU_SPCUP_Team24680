@@ -11,14 +11,6 @@
 #include "structure.h"
 #include "config.h"
 
-/* Sound Effect Trigger */
-short SOUND_EFFECT = 0; // 1: open, 0: close
-
-/* Discard Threshold */
-double theta_nondiscard = 0.9;  
-double theta_discard = 0.1;  
-double theta_bpm_tolerant_small = 0.03;
-double theta_bpm_tolerant_large = 0.80; // TODO: Do not change first 10 secs
 /* Global Variable */
 // Pointer to shared memory region
 Message *addr;   
