@@ -67,24 +67,30 @@ void ledRGBACT(Message *addr){
 		errExit("LED sigprocmask1");
 
 	FILE *fR = fopen("/sys/class/gpio/gpio22/value", "w");
+	FILE *fG = fopen("/sys/class/gpio/gpio27/value", "w");
 
 	const char *text0 = "0";
 	const char *text1 = "1";
 
 	
 	fprintf(fR, "%s", text1);
+	fprintf(fG, "%s", text1);
 	fflush(fR);
+	fflush(fG);
 
 
 	struct timespec toSleep;
 	toSleep.tv_sec = 0;
-    toSleep.tv_nsec = 300000000;
+    toSleep.tv_nsec = 250000000;
 	nanosleep(&toSleep, NULL);
 
 	fprintf(fR, "%s", text0);
+	fprintf(fG, "%s", text0);
 	fflush(fR);
+	fflush(fG);
 
 	fclose(fR);
+	fclose(fG);
 	if(sigprocmask(SIG_SETMASK, &LED_prevMask, NULL) == -1)
         errExit("LED sigprocmask2");
 
