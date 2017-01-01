@@ -80,7 +80,7 @@ void sigHandler(int sig){
 
         best_conf = best_conf * conf_decrease;
         if(best_conf > threshhold_conf && addr->conf < best_conf){
-                printf("Discard update. Because conf %.2f < best_conf %.2f", addr->conf, best_conf);
+                printf("Discard update. Because conf %.2f < best_conf %.2f \n", addr->conf, best_conf);
             return;
         }
         best_conf = addr->conf;
