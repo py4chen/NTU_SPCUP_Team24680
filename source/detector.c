@@ -157,7 +157,7 @@ while (loops > 0) {
 	    	addr->last_frame = aubio_tempo_get_last(o);
 	    	kill(pid, SIGUSR1);
 		fprintf(stderr, "Current time : %llu\n",getCurrentTimestamp()-addr->start_time);
-	      	fprintf(stderr, "beat at %.3fms, %.3fs, frame %d, %.2fbpm with confidence %.2f\n",
+	      	fprintf(stderr, "beat at %.3fms, %.3fs, frame %d, %.2fbpm with confidence %.9f\n",
 		   aubio_tempo_get_last_ms(o), aubio_tempo_get_last_s(o),
 		   aubio_tempo_get_last(o), aubio_tempo_get_bpm(o), aubio_tempo_get_confidence(o));
 	        fprintf(f_aubio, "%.3f\n",aubio_tempo_get_last_s(o));
