@@ -11,6 +11,7 @@ typedef struct message{
 	double last_ms;
 	int last_frame;
 	double bpm;
+	double conf;
 	unsigned long long start_time;
 
 }Message;
