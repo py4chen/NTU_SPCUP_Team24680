@@ -42,6 +42,11 @@ int discard_flag = 0;
 // Signal set
 sigset_t blockSet, prevMask;
 
+// Conf
+double best_conf = 0;
+double threshhold_conf = 0.1;
+double conf_decrease = 0.9;
+
 unsigned long long getCurrentTimestamp(){
 	if(gettimeofday(&tv, NULL) == -1)
        errExit("last_beat_time gettimeofday");
@@ -72,6 +77,14 @@ void sigHandler(int sig){
                 printf("Discard bpm update at %lld\n ", getCurrentTimestamp() - addr->start_time);
             return;
         }
+
+        best_conf = best_conf * conf_decrease;
+        if(best_conf > threshhold_conf && addr->conf < best_conf){
+                printf("Discard update. Because conf %.2f < best_conf %.2f", addr->conf, best_conf);
+            return;
+        }
+        best_conf = addr->conf;
+
 
 		double spb = (double)60 / addr->bpm;
 		bpm = addr->bpm;
