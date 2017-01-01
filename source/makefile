@@ -28,6 +28,9 @@ flow: ./flow.c ./led.c ./detector.c ./structure.h
 	echo $(RGB_DISABLE) > /sys/class/gpio/gpio$(LED_GREEN)/value
 	echo $(RGB_DISABLE) > /sys/class/gpio/gpio$(LED_BLUE)/value
 
+offline: ./offline.c structure.h
+	gcc offline.c -Wall -l asound -L $(AUBIO_PATH) -l aubio -I $(AUBIO_SRC) -o offline
+
 run:
 	sudo ./flow
 
