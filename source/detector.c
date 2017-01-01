@@ -155,17 +155,19 @@ while (loops > 0) {
 		n_frames+= hop_size;
     if (out->data[0] != 0) {
 //  if (skip % 2 == 0){
-		addr->bpm = aubio_tempo_get_bpm(o);
+			addr->bpm = aubio_tempo_get_bpm(o);
 	    	addr->last_ms = aubio_tempo_get_last_ms(o);
 	    	addr->last_frame = aubio_tempo_get_last(o);
 	    	addr->conf = aubio_tempo_get_confidence(o);
+	    	addr->aubio_called_timestamp = getCurrentTimestamp();
+	    	
 	    	kill(pid, SIGUSR1);
-		fprintf(stderr, "Current time : %llu\n",getCurrentTimestamp()-addr->start_time);
+			fprintf(stderr, "Current time : %llu\n",getCurrentTimestamp()-addr->start_time);
 	      	fprintf(stderr, "beat at %.3fms, %.3fs, frame %d, %.2fbpm with confidence %.9f\n",
-		   aubio_tempo_get_last_ms(o), aubio_tempo_get_last_s(o),
-		   aubio_tempo_get_last(o), aubio_tempo_get_bpm(o), aubio_tempo_get_confidence(o));
+		    aubio_tempo_get_last_ms(o), aubio_tempo_get_last_s(o),
+		    aubio_tempo_get_last(o), aubio_tempo_get_bpm(o), aubio_tempo_get_confidence(o));
 	        fprintf(f_aubio, "%.3f\n",aubio_tempo_get_last_s(o));
-          fflush(f_aubio);
+            fflush(f_aubio);
 //	}	
 //	skip++;
     }

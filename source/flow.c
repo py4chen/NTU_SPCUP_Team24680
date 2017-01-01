@@ -46,6 +46,7 @@ sigset_t blockSet, prevMask;
 double best_conf = 0;
 double threshhold_conf = 0.05;
 double conf_decrease = 0.9;
+double silence_threshhold = 5;
 
 unsigned long long getCurrentTimestamp(){
 	if(gettimeofday(&tv, NULL) == -1)
@@ -247,7 +248,10 @@ int main(int argc, char *argv[]){
         	}
         	if(sigprocmask(SIG_BLOCK, &blockSet, &prevMask) == -1)
         		errExit("sigprocmask1");
-            if (discard_flag == 1){ // so close that discard next beat
+            if(getCurrentTimestamp() - addr->aubio_called_timestamp > silence_threshhold * 1000000){
+                printf(" Go Silent, %llu usec no aubio signal.\n");
+            }
+            else if (discard_flag == 1){ // so close that discard next beat
                 discard_flag = 0;
             }
             else{ // call beater
