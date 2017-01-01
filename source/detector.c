@@ -101,7 +101,7 @@ fvec_t * out = new_fvec (1); // output position
 aubio_tempo_t * o = new_aubio_tempo("default", win_size, hop_size, samplerate);
 
 // set silence threshhold
-aubio_tempo_set_silence(o, 60);
+aubio_tempo_set_silence(o, -30);
 
 char filename[10];
 int i = 0;

@@ -26,7 +26,7 @@ int sound_pid;
 int ledRGB_pid;
 
 // Beat Time Variables
-float bpm=0;
+double bpm=0;
 long long sec_interval;
 long long nano_interval;
 
@@ -44,7 +44,7 @@ sigset_t blockSet, prevMask;
 
 // Conf
 double best_conf = 0;
-double threshhold_conf = 0.1;
+double threshhold_conf = 0.05;
 double conf_decrease = 0.9;
 
 unsigned long long getCurrentTimestamp(){
