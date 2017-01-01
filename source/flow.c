@@ -249,7 +249,7 @@ int main(int argc, char *argv[]){
         	if(sigprocmask(SIG_BLOCK, &blockSet, &prevMask) == -1)
         		errExit("sigprocmask1");
             if(getCurrentTimestamp() - addr->aubio_called_timestamp > silence_threshhold * 1000000){
-                printf(" Go Silent, %llu usec no aubio signal.\n");
+                printf(" Go Silent, %llu usec no aubio signal.\n", getCurrentTimestamp()-addr->start_time);
             }
             else if (discard_flag == 1){ // so close that discard next beat
                 discard_flag = 0;
