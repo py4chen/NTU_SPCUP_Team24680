@@ -12,7 +12,7 @@ void start_sound() {
 	int pid = fork();
 	switch(pid){
 		case 0:
-			system("aplay -q ./sound_start.wav");
+			system("aplay -q ./sound_beat01.wav");
 			exit(1);
 		default:
 			return;
