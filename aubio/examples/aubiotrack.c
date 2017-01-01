@@ -24,6 +24,7 @@
 #define PROG_HAS_SILENCE 1
 #define PROG_HAS_OUTPUT 1
 #define PROG_HAS_JACK 1
+#define PROG_HAS_CONFIDENCE 1
 #include "parse_args.h"
 
 aubio_tempo_t * tempo;
@@ -43,8 +44,6 @@ void process_block(fvec_t * ibuf, fvec_t *obuf) {
     aubio_wavetable_play ( wavetable );
     /* send a midi tap (default to C0) out to the midi output */
     if (usejack) send_noteon(miditap_note, miditap_velo);
-    print_time (aubio_tempo_get_last (tempo));
-    outmsg ("\n");
   } else {
     aubio_wavetable_stop ( wavetable );
   }
@@ -57,6 +56,9 @@ void process_block(fvec_t * ibuf, fvec_t *obuf) {
 void process_print (void) {
   if ( is_beat && !is_silence ) {
     print_time (aubio_tempo_get_last (tempo));
+		if( show_confidence ) {
+			outmsg(", %.2f", aubio_tempo_get_confidence(tempo));
+		}
     outmsg ("\n");
   }
 }
@@ -90,7 +92,9 @@ int main(int argc, char **argv) {
   examples_common_process((aubio_process_func_t)process_block,process_print);
 
   // send a last note off
-  send_noteon (miditap_note, 0);
+  if (usejack) {
+    send_noteon (miditap_note, 0);
+  }
 
   del_aubio_tempo(tempo);
   del_aubio_wavetable (wavetable);

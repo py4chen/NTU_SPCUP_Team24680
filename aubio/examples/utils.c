@@ -32,6 +32,7 @@
 #endif /* HAVE_JACK */
 
 int verbose = 0;
+int show_confidence = 0;
 int usejack = 0;
 // input / output
 char_t *sink_uri = NULL;
