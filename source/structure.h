@@ -12,6 +12,7 @@ typedef struct message{
 	int last_frame;
 	double bpm;
 	double conf;
+	double aubio_called_timestamp;
 	unsigned long long start_time;
 
 }Message;
