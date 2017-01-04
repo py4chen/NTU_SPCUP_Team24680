@@ -1,5 +1,5 @@
-AUBIO_PATH=../../aubio/build/src # path of aubio
-AUBIO_SRC=../../aubio/src
+AUBIO_PATH=../aubio/build/src # path of aubio
+AUBIO_SRC=../aubio/src
 
 ## RGB_LED
 LED_BLUE=17
@@ -28,7 +28,7 @@ flow: ./flow.c ./led.c ./detector.c ./structure.h
 	echo $(RGB_DISABLE) > /sys/class/gpio/gpio$(LED_GREEN)/value
 	echo $(RGB_DISABLE) > /sys/class/gpio/gpio$(LED_BLUE)/value
 
-offline: ./offline.c structure.h
+offline: ./offline.c
 	gcc offline.c -Wall -l asound -L $(AUBIO_PATH) -l aubio -I $(AUBIO_SRC) -o offline
 
 run:
@@ -37,8 +37,8 @@ run:
 ledtest:
 	sh -c 'echo oneshot > /sys/class/leds/led0/trigger'
 	sudo sh -c 'echo 1 > /sys/class/leds/led0/shot'
-	gcc led_test.c -o ledtest
-	./ledtest
+	## gcc led_test.c -o ledtest
+	## ./ledtest
 
 ledRGBtest:
 	echo 1 > /sys/class/gpio/gpio$(LED_RED)/value
