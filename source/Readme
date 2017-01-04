@@ -1,0 +1,23 @@
+
+Embedded system:
+	*	Raspberry Pi 3 Model B
+		(Please see "raspberrypi3b.jpg")
+
+Accessary:
+	*	a USB Microphone on "plughw:1,0"
+		(card 1: Device [USB PnP Audio Device], device 0: USB Audio [USB Audio])
+	*	a RGB LED on GPIO
+		(R:22, G:27, B:17)
+
+How to Run:
+	1.  Clean bin files:
+		$ sudo make clean
+	2.	Compile the program and Init the LED0 and the RGB-LED:
+		$ sudo make flow
+	3.	Run the program
+		$ sudo make run
+		(the program would detect the sound 30 seconds. 
+		You could press CTRL+C to kill the program afterwards.)
+
+
+Thanks!
