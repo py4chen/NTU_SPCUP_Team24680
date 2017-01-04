@@ -125,7 +125,7 @@ void sigHandler(int sig){
     }
     else if(sig == SIGUSR2){
         if(SOUND_EFFECT == 1){
-            beat_sound();
+            beat_sound(addr);
         }
     }
     else if(sig == SIGINT){

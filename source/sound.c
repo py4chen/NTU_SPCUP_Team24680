@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 
-void beat_sound() {
+void beat_sound(Message *addr) {
 	system("aplay -q ./sound_beat01.wav");
 
 	long long t = getCurrentTimestamp() - addr->start_time;
