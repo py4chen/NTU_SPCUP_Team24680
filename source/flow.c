@@ -148,12 +148,6 @@ static void exit_handler(void)
 }
 
 int main(int argc, char *argv[]){   
-    if(SOUND_EFFECT==1){
-        start_sound();
-    }
-    
-    ledRGB_setup();
-
     f_sound= fopen("./log_sound.txt", "w");
     f_rgb= fopen("./log_rgb.txt", "w");
     f_led= fopen("./log_led.txt", "w");
@@ -164,6 +158,13 @@ int main(int argc, char *argv[]){
     fG = fopen("/sys/class/gpio/gpio27/value", "w");
     f = fopen("/sys/class/leds/led0/shot", "w");
 
+
+
+    if(SOUND_EFFECT==1){
+        start_sound();
+    }
+    
+    ledRGB_setup();
     addr = mmap(NULL, sizeof(Message), PROT_READ | PROT_WRITE,
                 MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     if (addr == MAP_FAILED)
