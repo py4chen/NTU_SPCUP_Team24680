@@ -103,6 +103,10 @@ void ledRGBACT(Message *addr){
 
 	fclose(fR);
 	fclose(fG);
+
+	fprintf(f_rgb, "%lld.%lld\n", t_sec, t-t_sec*1000000);
+	fflush(f_rgb);
+
 	if(sigprocmask(SIG_SETMASK, &LED_prevMask, NULL) == -1)
         errExit("LED sigprocmask2");
 

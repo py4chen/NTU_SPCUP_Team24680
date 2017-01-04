@@ -154,6 +154,8 @@ int main(int argc, char *argv[]){
     
     ledRGB_setup();
 
+    f_sound= fopen("./log_sound.txt", "w");
+    f_rgb= fopen("./log_rgb.txt", "w");
     f_led= fopen("./log_led.txt", "w");
     f_aubio= fopen("./log_aubio.txt", "w");
     addr = mmap(NULL, sizeof(Message), PROT_READ | PROT_WRITE,
