@@ -10,12 +10,20 @@ Accessary:
 		(R:22, G:27, B:17)
 
 How to Run:
+	0.  Compile Aubio that we submitted:
+		[./aubio]$ ./waf configure
+		[./aubio]$ ./waf build
+		[./aubio]$ sudo ./waf install
+
 	1.  Clean bin files:
-		$ sudo make clean
+		[./source]$ sudo make clean
+		
 	2.	Compile the program and Init the LED0 and the RGB-LED:
-		$ sudo make flow
+		[./source]$ sudo make flow
+
 	3.	Run the program
-		$ sudo make run
+		[./source]$ sudo make run
+
 		(the program would detect the sound 30 seconds. 
 		You could press CTRL+C to kill the program afterwards.)
 
