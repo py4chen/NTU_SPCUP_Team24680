@@ -5,8 +5,8 @@
 
 float bpm=0;
 /* Discard Threshold */
-double theta_nondiscard = 0.9;  
-double theta_discard = 0.1;  
+double theta_nondiscard = 0.8;
+double theta_discard = 0.3;
 double theta_bpm_tolerant_small = 0.03;
 double theta_bpm_tolerant_large = 0.80; // TODO: Do not change first 10 secs
 // Conf
@@ -17,7 +17,7 @@ unsigned long long start_time = 0, old_spb=0, old_next_time=0, aubio_delay = 500
 void sigHandler(double new_bpm, double new_conf, double last_ms, unsigned long long cur_time){
     best_conf = best_conf * conf_decrease;
     if(best_conf > threshhold_conf && new_conf < best_conf){
-        printf("Discard update. Because conf %.2f < best_conf %.2f \n", new_conf, best_conf);
+        fprintf(stderr, "Discard update. Because conf %.2f < best_conf %.2f \n", new_conf, best_conf);
         return;
     }
     best_conf = new_conf;
@@ -38,11 +38,11 @@ void sigHandler(double new_bpm, double new_conf, double last_ms, unsigned long l
 
               // check if discard old_next_beat_time
               if((next_time > old_next_time) && ((next_time - old_next_time) > (old_next_time - last_beat_time) * theta_nondiscard)){
-                  printf("Non discard old_next_time at %lld\n ", cur_time);
+                  fprintf(stderr, "Non discard old_next_time at %lld\n", cur_time);
                   fprintf(f_led, "%f\n", (double)old_next_time/1000000);
               }
               else if ((next_time < old_next_time) && (next_time - last_beat_time) < spb * theta_discard){
-                  printf("discard next_predicted_time at %lld\n ", cur_time);
+                  fprintf(stderr, "Discard next_predicted_time at %lld\n", cur_time);
 
               }
     }
