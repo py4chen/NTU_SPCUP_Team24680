@@ -158,6 +158,12 @@ int main(int argc, char *argv[]){
     f_rgb= fopen("./log_rgb.txt", "w");
     f_led= fopen("./log_led.txt", "w");
     f_aubio= fopen("./log_aubio.txt", "w");
+
+    fB = fopen("/sys/class/gpio/gpio17/value", "w");
+    fR = fopen("/sys/class/gpio/gpio22/value", "w");
+    fG = fopen("/sys/class/gpio/gpio27/value", "w");
+    f = fopen("/sys/class/leds/led0/shot", "w");
+
     addr = mmap(NULL, sizeof(Message), PROT_READ | PROT_WRITE,
                 MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     if (addr == MAP_FAILED)

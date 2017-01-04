@@ -23,6 +23,11 @@ int detector(int pid, Message *addr);
 void ledACT(Message *addr);
 FILE *f_led, *f_sound, *f_rgb, *f_aubio;
 
+FILE *fB,
+FILE *fR,
+FILE *fG,
+FILE *f,
+
 /*
 struct timespec{
 	time_t tv_sec; //seconds

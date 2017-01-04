@@ -13,7 +13,7 @@
 
 
 void ledACT(Message *addr){
-	FILE *f = fopen("/sys/class/leds/led0/shot", "w");
+	
 	if (f == NULL)
 	{
    		printf("Error opening file!\n");
@@ -21,7 +21,7 @@ void ledACT(Message *addr){
 	}
 	const char *text = "1";
 	fprintf(f, "%s", text);
-	fclose(f);
+
 
 	long long t = getCurrentTimestamp() - addr->start_time;
   	long long t_sec = t/1000000;
@@ -45,17 +45,12 @@ void _ledACT(Message *addr){
 // FILE *fB = fopen("/sys/class/gpio/gpio17/value", "w");
 
 void ledRGB_setup(){
-	FILE *fB = fopen("/sys/class/gpio/gpio17/value", "w");
 	const char *text = "1";
 	fprintf(fB, "%s", text);
 	fflush(fB);
-	fclose(fB);
 }
 
 void ledRGB_exit(){
-	FILE *fB = fopen("/sys/class/gpio/gpio17/value", "w");
-	FILE *fR = fopen("/sys/class/gpio/gpio22/value", "w");
-	FILE *fG = fopen("/sys/class/gpio/gpio27/value", "w");
 
 	const char *text = "0";
 	fprintf(fB, "%s", text);
@@ -65,9 +60,6 @@ void ledRGB_exit(){
 	fflush(fG);
 	fflush(fB);
 
-	fclose(fB);
-	fclose(fR);
-	fclose(fG);
 }
 
 
@@ -77,9 +69,6 @@ void ledRGBACT(Message *addr){
     sigaddset(&LED_blockSet, SIGHUP);
     if(sigprocmask(SIG_BLOCK, &LED_blockSet, &LED_prevMask) == -1)
 		errExit("LED sigprocmask1");
-
-	FILE *fR = fopen("/sys/class/gpio/gpio22/value", "w");
-	FILE *fG = fopen("/sys/class/gpio/gpio27/value", "w");
 
 	const char *text0 = "0";
 	const char *text1 = "1";
@@ -100,9 +89,6 @@ void ledRGBACT(Message *addr){
 	fprintf(fG, "%s", text0);
 	fflush(fR);
 	fflush(fG);
-
-	fclose(fR);
-	fclose(fG);
 
 	long long t = getCurrentTimestamp() - addr->start_time;
   	long long t_sec = t/1000000;
