@@ -21,7 +21,7 @@ struct timeval tv;
 unsigned long long getCurrentTimestamp();
 int detector(int pid, Message *addr);
 void ledACT(Message *addr);
-FILE *f_led, *f_aubio;
+FILE *f_led, *f_sound, *f_rgb, *f_aubio;
 
 /*
 struct timespec{
